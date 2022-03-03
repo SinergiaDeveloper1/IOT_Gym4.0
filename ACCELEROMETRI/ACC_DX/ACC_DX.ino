@@ -20,13 +20,9 @@ Adafruit_MPU6050 mpu;
 #define INFLUXDB_BUCKET "test"
 #define INFLUXDB_TOKEN  "7q44Rz0f0IZYM4SYguqyPB5RPafXPEagZUpRuIUBp3aoDT3HVQzFg5c0Hg_RY8Khk8cH8MjuApdyQsKrFyaF4w=="
 
-#define D_TARA    100
-#define D_MISURE  25
+#define D_MISURE 10
 
-/* tare accelerometro SX */
-float taraX,
-      taraY,
-      taraZ;
+/* in questa versione ho rimosso la tara sugli accelerometri */
 
 /* variabili globali */
 InfluxDBClient client(INFLUXDB_URL,
@@ -38,24 +34,27 @@ InfluxDBClient client(INFLUXDB_URL,
 /* definisco la tabella influxDb dove inserire i dati */
 Point sensor("progetto_LC");
 
-void setup() {
+void setup()
+{
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(1000);
   }
 
   /* preparo la connessione a InfluxDb */
-  sensor.addTag("host", "Accelerometro_DX");
+  sensor.addTag("host", "Accelerometro_SX");
   sensor.addTag("location", "Schieti");
   sensor.addTag("room", "Palestra");
 
   /* testo la connessione */
   client.validateConnection();
 
-  if (!mpu.begin()) {
+  if (!mpu.begin())
+  {
     while (1);
   }
 
@@ -64,14 +63,11 @@ void setup() {
   mpu.setGyroRange(MPU6050_RANGE_500_DEG);
   mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 
-  delay(1000);
-
+  /* prima di passare al loop, aspetto 5 secondi */
+  delay(5000);
 }
 
 /* variabili globali di elaborazione dati */
-float perTaraX[D_TARA];
-float perTaraY[D_TARA];
-float perTaraZ[D_TARA];
 float AccX[D_MISURE];
 float AccY[D_MISURE];
 float AccZ[D_MISURE];
@@ -79,86 +75,47 @@ float AccZ[D_MISURE];
 float aX, aY, aZ; /* valori accelerazione */
 
 /* contatori */
-int cTara = 0,
-    cRaccoltaDati = 0;
-
-bool flgTaraInCorso = true;
-bool flgInizioDiscesa = false;
-bool flgInizioSalita = false;
+int cRaccoltaDati = 0;
 
 /* INIZIO LOOP */
-void loop() {
+void loop()
+{
 
   readSensors();
 
-  /* taro i sensori in base alla loro posizione */
-  if (flgTaraInCorso) {
+  /* raccolgo i dati */
+  if (cRaccoltaDati < D_MISURE)
+  {
 
-    impostaTara();
+    /* raccolgo i dati della discesa */
+    AccX[cRaccoltaDati] = aX;
+    AccY[cRaccoltaDati] = aY;
+    AccZ[cRaccoltaDati] = aZ;
 
-  } else {
+    cRaccoltaDati++;
+  }
+  else
+  {
 
-    if (cRaccoltaDati < D_MISURE) {
-
-      /* raccolgo i dati della discesa */
-      AccX[cRaccoltaDati] = aX;
-      AccY[cRaccoltaDati] = aY;
-      AccZ[cRaccoltaDati] = aZ;
-
-      cRaccoltaDati++;
-
-    } else {
-
-      /* elaboro i dati e li invio a InfluxDB */
-      cRaccoltaDati = 0;
-      writeToInfluxDb(elaboraDato());
-
-    }
+    /* elaboro i dati e li invio */
+    cRaccoltaDati = 0;
+    writeToInfluxDb(elaboraDatoMedio(), 0);
+    writeToInfluxDb(elaboraDatoMax(), 1);
 
     delay(10);
-
   }
-
 }
 
-void impostaTara() {
-
-  if (cTara < D_TARA) {
-
-    perTaraX[cTara] = aX;
-    perTaraY[cTara] = aY;
-    perTaraZ[cTara] = aZ;
-
-    cTara++;
-
-  } else {
-
-    /* calcolo la tara come valore medio di quelli registrati */
-    for (byte i = 0; i < D_TARA; i++) {
-      taraX += perTaraX[i];
-      taraY += perTaraY[i];
-      taraZ += perTaraZ[i];
-    }
-
-    taraX = taraX / D_TARA;
-    taraY = taraY / D_TARA;
-    taraZ = taraZ / D_TARA;
-
-    flgTaraInCorso = false;
-
-  }
-
-}
-
-float elaboraDato() {
+float elaboraDatoMedio()
+{
 
   float accelerazioneMediaTot = 0.0;
   float accX = 0.0;
   float accY = 0.0;
   float accZ = 0.0;
 
-  /* calcolo la tara come valore medio di quelli registrati */
-  for (byte i = 0; i < D_MISURE; i++) {
+  for (byte i = 0; i < D_MISURE; i++)
+  {
     accX += AccX[i];
     accY += AccY[i];
     accZ += AccZ[i];
@@ -167,32 +124,72 @@ float elaboraDato() {
   accX /= D_MISURE;
   accY /= D_MISURE;
   accZ /= D_MISURE;
+  // Serial.println("accX: " + String(accX, 4));
+  // Serial.println("accY: " + String(accY, 4));
+  // Serial.println("accZ: " + String(accZ, 4));
 
-  accelerazioneMediaTot = sqrt((accX * accX) + (accY * accY) + (accZ * accZ));
+  accelerazioneMediaTot = sqrt((accX * accX) + (accY * accY) + (accZ * accZ)) - 9.81;
   accelerazioneMediaTot = roundf(accelerazioneMediaTot * 10000) / 10000;
 
   return (accelerazioneMediaTot);
+}
 
+float elaboraDatoMax()
+{
+
+  float accelerazioneMax = 0.0;
+  float perMax[D_MISURE];
+
+  for (byte i = 0; i < D_MISURE; i++)
+  {
+
+    perMax[i] = sqrt((AccX[i] * AccX[i]) + (AccY[i] * AccY[i]) + (AccZ[i] * AccZ[i])) - 9.81;
+
+    if (perMax[i] > accelerazioneMax)
+    {
+      accelerazioneMax = perMax[i];
+    }
+  }
+
+  // Serial.println("accX: " + String(accX, 4));
+  // Serial.println("accY: " + String(accY, 4));
+  // Serial.println("accZ: " + String(accZ, 4));
+
+  accelerazioneMax = roundf(accelerazioneMax * 10000) / 10000;
+
+  return (accelerazioneMax);
 }
 
 /* funzione che legge dal sensore */
-void readSensors() {
+void readSensors()
+{
 
   /* Get new sensor events with the readings */
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
-  aX = a.acceleration.x - taraX;
-  aY = a.acceleration.y - taraY;
-  aZ = a.acceleration.z - taraZ;
-
+  aX = a.acceleration.x;
+  aY = a.acceleration.y;
+  aZ = a.acceleration.z;
 }
 
-void writeToInfluxDb(float a) {
+/* una volta scrivo il valore medio, una volta il max */
+void writeToInfluxDb(float a, int flgMedia_Max)
+{
 
-  sensor.clearFields();
-  sensor.addField("Accelerazione Dx", a);
+  if (flgMedia_Max == 0)
+  {
+
+    sensor.clearFields();
+    sensor.addField("Accelerazione_Media_DX", a);
+  }
+  else
+  {
+
+    sensor.clearFields();
+    sensor.addField("Accelerazione_Max_DX", a);
+  }
 
   client.writePoint(sensor);
-
+  
 }

@@ -12,8 +12,8 @@
 Adafruit_MPU6050 mpu;
 
 /* costanti per le connessioni */
-#define WIFI_SSID "Vodafone-A47203440"
-#define WIFI_PASSWORD "HtmMgyffEM4Mf4cH"
+#define WIFI_SSID "OPPO Reno4 Z 5G" //"Vodafone-A47203440"
+#define WIFI_PASSWORD "ZIOBANANA" //"HtmMgyffEM4Mf4cH"
 
 #define INFLUXDB_URL "http://93.186.254.118:8086"
 #define INFLUXDB_ORG "uniurb"
@@ -72,7 +72,8 @@ void setup()
   if (!mpu.begin())
   {
     Serial.println("Failed to find MPU6050 chip");
-    while (1);
+    while (1)
+      ;
   }
   Serial.println("MPU6050 Found!");
 
@@ -104,7 +105,6 @@ void loop()
   readSensors();
 
   /* raccolgo i dati */
-
   if (cRaccoltaDati < D_MISURE)
   {
 
@@ -150,13 +150,14 @@ void loop()
 
     /* elaboro i dati e li invio a InfluxDB */
     cRaccoltaDati = 0;
-    writeToInfluxDb(elaboraDato());
+    writeToInfluxDb(elaboraDatoMedio(), 0);
+    writeToInfluxDb(elaboraDatoMax(), 1);
 
     delay(10);
   }
 }
 
-float elaboraDato()
+float elaboraDatoMedio()
 {
 
   float accelerazioneMediaTot = 0.0;
@@ -174,16 +175,44 @@ float elaboraDato()
   accX /= D_MISURE;
   accY /= D_MISURE;
   accZ /= D_MISURE;
-  Serial.println("accX: " + String(accX, 4));
-  Serial.println("accY: " + String(accY, 4));
-  Serial.println("accZ: " + String(accZ, 4));
+  // Serial.println("accX: " + String(accX, 4));
+  // Serial.println("accY: " + String(accY, 4));
+  // Serial.println("accZ: " + String(accZ, 4));
 
   accelerazioneMediaTot = sqrt((accX * accX) + (accY * accY) + (accZ * accZ)) - 9.81;
   accelerazioneMediaTot = roundf(accelerazioneMediaTot * 10000) / 10000;
 
-  Serial.println("Accelerazione bilanciere Sx: " + String(accelerazioneMediaTot, 4));
+  Serial.println("Accelerazione media bilanciere SX: " + String(accelerazioneMediaTot, 4));
 
   return (accelerazioneMediaTot);
+}
+
+float elaboraDatoMax()
+{
+
+  float accelerazioneMax = 0.0;
+  float perMax[D_MISURE];
+
+  for (byte i = 0; i < D_MISURE; i++)
+  {
+
+    perMax[i] = sqrt((AccX[i] * AccX[i]) + (AccY[i] * AccY[i]) + (AccZ[i] * AccZ[i])) - 9.81;
+
+    if (perMax[i] > accelerazioneMax)
+    {
+      accelerazioneMax = perMax[i];
+    }
+  }
+
+  // Serial.println("accX: " + String(accX, 4));
+  // Serial.println("accY: " + String(accY, 4));
+  // Serial.println("accZ: " + String(accZ, 4));
+
+  accelerazioneMax = roundf(accelerazioneMax * 10000) / 10000;
+
+  Serial.println("Accelerazione Max bilanciere SX: " + String(accelerazioneMax, 4));
+
+  return (accelerazioneMax);
 }
 
 /* funzione che legge dal sensore */
@@ -197,14 +226,24 @@ void readSensors()
   aX = a.acceleration.x;
   aY = a.acceleration.y;
   aZ = a.acceleration.z;
-
 }
 
-void writeToInfluxDb(float a)
+/* una volta scrivo il valore medio, una volta il max */
+void writeToInfluxDb(float a, int flgMedia_Max)
 {
 
-  sensor.clearFields();
-  sensor.addField("Accelerazione Sx", a);
+  if (flgMedia_Max == 0)
+  {
+
+    sensor.clearFields();
+    sensor.addField("Accelerazione_Media_SX", a);
+  }
+  else
+  {
+
+    sensor.clearFields();
+    sensor.addField("Accelerazione_Max_SX", a);
+  }
 
   Serial.print("Writing: ");
   Serial.println(sensor.toLineProtocol());

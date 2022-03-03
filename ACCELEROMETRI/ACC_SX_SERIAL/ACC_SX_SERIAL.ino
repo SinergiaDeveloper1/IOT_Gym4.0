@@ -155,7 +155,7 @@ void loop() {
 
       /* elaboro i dati e li invio a InfluxDB */
       cRaccoltaDati = 0;
-      writeToInfluxDb(elaboraDato());
+      writeToInfluxDb(elaboraDatoMedio());
 
     }
 
@@ -200,7 +200,7 @@ void impostaTara() {
 
 }
 
-float elaboraDato() {
+float elaboraDatoMedio() {
 
   float accelerazioneMediaTot = 0.0;
   float accX = 0.0;
