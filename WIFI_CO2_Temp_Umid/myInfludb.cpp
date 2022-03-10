@@ -1,11 +1,12 @@
 #include "header.h"
 
-#include <ESP8266WiFiMulti.h>
- 
+//#include <ESP8266WiFiMulti.h>
+#include <ESP8266WiFi.h>
+
 #include <InfluxDbClient.h>
 #include <InfluxDbCloud.h>
 
-#define WIFI_SSID "Vodafone-A47203440"
+#define WIFI_SSID "Vodafone-A47203440_2GEXT"
 #define WIFI_PASSWORD "HtmMgyffEM4Mf4cH"
 #define INFLUXDB_URL "http://93.186.254.118:8086"
 
@@ -13,46 +14,73 @@
 #define INFLUXDB_ORG "uniurb"
 #define INFLUXDB_BUCKET "test"
 
-ESP8266WiFiMulti wifiMulti;
-InfluxDBClient client(INFLUXDB_URL, 
+// ESP8266WiFiMulti wifiMulti;
+InfluxDBClient client(INFLUXDB_URL,
                       INFLUXDB_ORG,
-                      INFLUXDB_BUCKET, 
-                      INFLUXDB_TOKEN, 
+                      INFLUXDB_BUCKET,
+                      INFLUXDB_TOKEN,
                       InfluxDbCloud2CACert);
 
 Point sensor("progetto_LC");
 
-void initInfluxdb() {
-  
-  WiFi.mode(WIFI_STA);
-  wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);
+void initInfluxdb()
+{
+
+  // WiFi.mode(WIFI_STA);
+  // wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   /* ciclo i tentativi di connessione */
-  while (wifiMulti.run() != WL_CONNECTED) {
-    
-    delay(2000);
-    
+  // while (wifiMulti.run() != WL_CONNECTED)
+  // {
+
+  //   delay(2000);
+  // }
+
+  int count = 0;
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+
+    delay(1000);
+    WiFi.begin(ssid, pass);
+    delay(1000);
+
+    count++;
+
+    /* dopo tre tentativi lo faccio ripartire */
+    if (count > 3)
+    {
+      while (1);
+    }
   }
-    
+
   sensor.addTag("host", "ESP8266_Co2");
   sensor.addTag("location", "Schieti");
   sensor.addTag("room", "palestra");
-  
 }
 
-void sendInfluxdb() {
-  
+void sendInfluxdb()
+{
+
+  /* controllo se sono collegato */
+  if (WiFi.status() != WL_CONNECTED)
+  {
+
+    delay(1000);
+    while (1);
+  }
+
   sensor.clearFields();
 
   sensor.addField("Temperatura_Interna_1", getT());
   sensor.addField("Umidità_Interna_1", getH());
-  
-  if(getEtvco() > 10)
+
+  if (getEtvco() > 10)
     sensor.addField("etvco", getEtvco());
-  if(getEco2() > 10)
+  if (getEco2() > 10)
     sensor.addField("eco2", getEco2());
 
   /* invio il dato */
   client.writePoint(sensor);
-
 }

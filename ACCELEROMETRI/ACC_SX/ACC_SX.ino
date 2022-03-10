@@ -12,7 +12,7 @@
 Adafruit_MPU6050 mpu;
 
 /* costanti per le connessioni */
-#define WIFI_SSID       "Vodafone-A47203440"
+#define WIFI_SSID       "Vodafone-A47203440_2GEXT"
 #define WIFI_PASSWORD   "HtmMgyffEM4Mf4cH"
 
 #define INFLUXDB_URL    "http://93.186.254.118:8086"

@@ -18,7 +18,7 @@ char clientID[]  = "DATI_FINESTRA";
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
-const char broker[]      = "192.168.10.126";
+const char broker[]      = "192.168.1.111";
 int        port          = 1883;
 const char topic[]       = "iot/message";
 
@@ -48,8 +48,10 @@ void setup() {
     
     count++;
 
+    /* dopo tre tentativi lo faccio ripartire */
     if (count > 3) {
-      ESP.deepSleep(30e6);
+      //ESP.deepSleep(30e6);
+      while(1);
     }
     
   }
@@ -58,7 +60,9 @@ void setup() {
   
   if (!mqttClient.connect(broker, port)) {
     /* se non si riesce a connettere al broker, lo mando in deep sleep */
-    ESP.deepSleep(30e6);
+    /* se funzionasse. Ma visto che non funziona, uso il watchdog */
+    //ESP.deepSleep(30e6);
+    while(1);
   }
 
   delay(100);
