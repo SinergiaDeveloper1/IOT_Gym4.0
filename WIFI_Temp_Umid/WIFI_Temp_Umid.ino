@@ -4,8 +4,8 @@
 #include <InfluxDbCloud.h>    /* per gestire il token di sicurezza di InfluxDb */
 
 /* costanti per le connessioni */
-#define WIFI_SSID       "Vodafone-A47203440_2GEXT"
-#define WIFI_PASSWORD   "HtmMgyffEM4Mf4cH"
+#define WIFI_SSID       "STRONG_353C_2.4Ghz" //"Vodafone-A47203440_2GEXT"
+#define WIFI_PASSWORD   "737558353C"  //"HtmMgyffEM4Mf4cH"
 
 #define INFLUXDB_URL    "http://93.186.254.118:8086"
 #define INFLUXDB_ORG    "uniurb"
@@ -39,10 +39,20 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     
+  int count = 0;
+
   while (WiFi.status() != WL_CONNECTED) {
     
     delay(1000);
     
+    count++;
+
+    /* dopo tre tentativi lo faccio ripartire */
+    if (count > 3)
+    {
+      while (1);
+    }
+
   }
 
   /* preparo la connessione a InfluxDb */

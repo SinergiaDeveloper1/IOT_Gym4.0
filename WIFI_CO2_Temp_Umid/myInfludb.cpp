@@ -6,8 +6,8 @@
 #include <InfluxDbClient.h>
 #include <InfluxDbCloud.h>
 
-#define WIFI_SSID "Vodafone-A47203440_2GEXT"
-#define WIFI_PASSWORD "HtmMgyffEM4Mf4cH"
+#define WIFI_SSID "STRONG_353C_2.4Ghz" //"Vodafone-A47203440_2GEXT"
+#define WIFI_PASSWORD "737558353C" //"HtmMgyffEM4Mf4cH"
 #define INFLUXDB_URL "http://93.186.254.118:8086"
 
 #define INFLUXDB_TOKEN "7q44Rz0f0IZYM4SYguqyPB5RPafXPEagZUpRuIUBp3aoDT3HVQzFg5c0Hg_RY8Khk8cH8MjuApdyQsKrFyaF4w=="
@@ -28,8 +28,7 @@ void initInfluxdb()
 
   // WiFi.mode(WIFI_STA);
   // wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
+  
   /* ciclo i tentativi di connessione */
   // while (wifiMulti.run() != WL_CONNECTED)
   // {
@@ -43,7 +42,7 @@ void initInfluxdb()
   {
 
     delay(1000);
-    WiFi.begin(ssid, pass);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD); 
     delay(1000);
 
     count++;

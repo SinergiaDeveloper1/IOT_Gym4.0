@@ -1,4 +1,4 @@
 
 
-#define SECRET_SSID "Vodafone-A47203440_2GEXT"  //"Laboratorio-STI-R" //"Vodafone-A47203440" //"OPPO Reno4 Z 5G"
-#define SECRET_PASS "HtmMgyffEM4Mf4cH"    //"uniurb.sti.lab.paolo" //"HtmMgyffEM4Mf4cH"   //"ZIOBANANA" //
+#define SECRET_SSID "STRONG_353C_2.4Ghz" //"Vodafone-A47203440_2GEXT" "Vodafone-A47203440" "OPPO Reno4 Z 5G"
+#define SECRET_PASS "737558353C" //"HtmMgyffEM4Mf4cH" "ZIOBANANA" //
