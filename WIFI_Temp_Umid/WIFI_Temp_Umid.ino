@@ -4,7 +4,7 @@
 #include <InfluxDbCloud.h>    /* per gestire il token di sicurezza di InfluxDb */
 
 /* costanti per le connessioni */
-#define WIFI_SSID       "STRONG_353C_2.4Ghz" //"Vodafone-A47203440_2GEXT"
+#define WIFI_SSID       "STRONG_353C_2.4GHz" //"Vodafone-A47203440_2GEXT"
 #define WIFI_PASSWORD   "737558353C"  //"HtmMgyffEM4Mf4cH"
 
 #define INFLUXDB_URL    "http://93.186.254.118:8086"
