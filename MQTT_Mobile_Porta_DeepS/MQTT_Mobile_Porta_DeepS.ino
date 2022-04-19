@@ -18,7 +18,7 @@ char clientID[] = "DATI_PORTA";
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
-const char broker[] = "192.168.1.111";
+const char broker[] = "192.168.0.150";
 int port = 1883;
 const char topic[] = "iot/message";
 

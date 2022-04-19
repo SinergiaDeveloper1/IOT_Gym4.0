@@ -1,8 +1,8 @@
 #include <Stepper.h>
 
-#include <WiFi.h> /* inclusione della libreria per il WiFi */
-#include <InfluxDbClient.h>   /* per libreria di comunicazione con InfluxDb */
-#include <InfluxDbCloud.h>    /* per gestire il token di sicurezza di InfluxDb */
+#include <WiFi.h>           /* inclusione della libreria per il WiFi */
+#include <InfluxDbClient.h> /* per libreria di comunicazione con InfluxDb */
+#include <InfluxDbCloud.h>  /* per gestire il token di sicurezza di InfluxDb */
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
@@ -12,15 +12,15 @@
 Adafruit_MPU6050 mpu;
 
 /* costanti per le connessioni */
-#define WIFI_SSID       "Vodafone-A47203440_2GEXT"
-#define WIFI_PASSWORD   "HtmMgyffEM4Mf4cH"
+#define WIFI_SSID     "STRONG_353C_2.4GHz"  // "OPPO Reno4 Z 5G" "Vodafone-A47203440"
+#define WIFI_PASSWORD "737558353C"      //"ZIOBANANA" "HtmMgyffEM4Mf4cH"
 
-#define INFLUXDB_URL    "http://93.186.254.118:8086"
-#define INFLUXDB_ORG    "uniurb"
+#define INFLUXDB_URL "http://93.186.254.118:8086"
+#define INFLUXDB_ORG "uniurb"
 #define INFLUXDB_BUCKET "test"
 #define INFLUXDB_TOKEN  "7q44Rz0f0IZYM4SYguqyPB5RPafXPEagZUpRuIUBp3aoDT3HVQzFg5c0Hg_RY8Khk8cH8MjuApdyQsKrFyaF4w=="
 
-#define D_MISURE 10
+#define D_MISURE 50
 
 /* in questa versione ho rimosso la tara sugli accelerometri */
 
@@ -33,6 +33,22 @@ InfluxDBClient client(INFLUXDB_URL,
 
 /* definisco la tabella influxDb dove inserire i dati */
 Point sensor("progetto_LC");
+
+TaskHandle_t Task1;
+TaskHandle_t Task2;
+
+/* variabili globali di elaborazione dati */
+float AccX[D_MISURE];
+float AccY[D_MISURE];
+float AccZ[D_MISURE];
+
+/* valori accelerazione */
+float aX, aY, aZ;   
+float aMedia, aMax;
+
+/* contatori e flag */
+int cRaccoltaDati = 0;
+bool flgInvia = false;
 
 void setup()
 {
@@ -63,47 +79,92 @@ void setup()
   mpu.setGyroRange(MPU6050_RANGE_500_DEG);
   mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 
+  /* da qui la parte multicore: divido i due task che verranno eseguiti su un core separatamente */
+
+  //create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
+  xTaskCreatePinnedToCore(Task1code,   /* Task function. */
+                          "Task1",     /* name of task. */
+                          10000,       /* Stack size of task */
+                          NULL,        /* parameter of the task */
+                          1,           /* priority of the task */
+                          &Task1,      /* Task handle to keep track of created task */
+                          0);          /* pin task to core 0 */      
+
+  delay(500); 
+
+  //create a task that will be executed in the Task2code() function, with priority 1 and executed on core 1
+  xTaskCreatePinnedToCore(Task2code,   /* Task function. */
+                          "Task2",     /* name of task. */
+                          10000,       /* Stack size of task */
+                          NULL,        /* parameter of the task */
+                          1,           /* priority of the task */
+                          &Task2,      /* Task handle to keep track of created task */
+                          1);          /* pin task to core 1 */
+
   /* prima di passare al loop, aspetto 5 secondi */
   delay(5000);
+
 }
 
-/* variabili globali di elaborazione dati */
-float AccX[D_MISURE];
-float AccY[D_MISURE];
-float AccZ[D_MISURE];
+void Task1code(void * pvParameters){
 
-float aX, aY, aZ; /* valori accelerazione */
+  /* loop del primo task */
+  for(;;){
+    
+    readSensors();
 
-/* contatori */
-int cRaccoltaDati = 0;
+    /* raccolgo i dati */
+    if (cRaccoltaDati < D_MISURE)
+    {
+
+      /* raccolgo i dati della discesa */
+      AccX[cRaccoltaDati] = aX;
+      AccY[cRaccoltaDati] = aY;
+      AccZ[cRaccoltaDati] = aZ;
+
+      cRaccoltaDati++;
+
+    }
+    else
+    {
+
+      /* elaboro i dati e li invio a InfluxDB */
+      cRaccoltaDati = 0;
+
+      aMedia = elaboraDatoMedio();
+      aMax = elaboraDatoMax();
+
+      flgInvia = true;
+
+      delay(10);
+
+    }
+
+  } 
+}
+
+void Task2code(void * pvParameters){
+
+  /* loop del secondo task */
+  for(;;){
+    
+    if (flgInvia)
+    {
+      writeToInfluxDb(aMedia, 0);
+      writeToInfluxDb(aMax, 1);
+      flgInvia = false;
+    }
+    
+    delay(10);
+    
+  }
+}
 
 /* INIZIO LOOP */
 void loop()
 {
 
-  readSensors();
 
-  /* raccolgo i dati */
-  if (cRaccoltaDati < D_MISURE)
-  {
-
-    /* raccolgo i dati della discesa */
-    AccX[cRaccoltaDati] = aX;
-    AccY[cRaccoltaDati] = aY;
-    AccZ[cRaccoltaDati] = aZ;
-
-    cRaccoltaDati++;
-  }
-  else
-  {
-
-    /* elaboro i dati e li invio */
-    cRaccoltaDati = 0;
-    writeToInfluxDb(elaboraDatoMedio(), 0);
-    writeToInfluxDb(elaboraDatoMax(), 1);
-
-    delay(10);
-  }
 }
 
 float elaboraDatoMedio()
@@ -124,11 +185,8 @@ float elaboraDatoMedio()
   accX /= D_MISURE;
   accY /= D_MISURE;
   accZ /= D_MISURE;
-  // Serial.println("accX: " + String(accX, 4));
-  // Serial.println("accY: " + String(accY, 4));
-  // Serial.println("accZ: " + String(accZ, 4));
 
-  accelerazioneMediaTot = sqrt((accX * accX) + (accY * accY) + (accZ * accZ)) - 9.81;
+  accelerazioneMediaTot = sqrt((accX * accX) + (accY * accY) + (accZ * accZ));
   accelerazioneMediaTot = roundf(accelerazioneMediaTot * 10000) / 10000;
 
   return (accelerazioneMediaTot);
@@ -143,17 +201,13 @@ float elaboraDatoMax()
   for (byte i = 0; i < D_MISURE; i++)
   {
 
-    perMax[i] = sqrt((AccX[i] * AccX[i]) + (AccY[i] * AccY[i]) + (AccZ[i] * AccZ[i])) - 9.81;
+    perMax[i] = sqrt((AccX[i] * AccX[i]) + (AccY[i] * AccY[i]) + (AccZ[i] * AccZ[i]));
 
     if (perMax[i] > accelerazioneMax)
     {
       accelerazioneMax = perMax[i];
     }
   }
-
-  // Serial.println("accX: " + String(accX, 4));
-  // Serial.println("accY: " + String(accY, 4));
-  // Serial.println("accZ: " + String(accZ, 4));
 
   accelerazioneMax = roundf(accelerazioneMax * 10000) / 10000;
 
@@ -174,22 +228,20 @@ void readSensors()
 }
 
 /* una volta scrivo il valore medio, una volta il max */
-void writeToInfluxDb(float a, int flgMedia_Max)
+void writeToInfluxDb(float a, int flgMedia0_Max1)
 {
 
-  if (flgMedia_Max == 0)
+  if (flgMedia0_Max1 == 0)
   {
-
     sensor.clearFields();
     sensor.addField("Accelerazione_Media_SX", a);
   }
   else
   {
-
     sensor.clearFields();
     sensor.addField("Accelerazione_Max_SX", a);
   }
 
   client.writePoint(sensor);
-  
+
 }

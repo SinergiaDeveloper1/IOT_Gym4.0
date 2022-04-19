@@ -12,8 +12,8 @@
 Adafruit_MPU6050 mpu;
 
 /* costanti per le connessioni */
-#define WIFI_SSID "STRONG_353C_2.4GHz"  // "OPPO Reno4 Z 5G" "Vodafone-A47203440"
-#define WIFI_PASSWORD "737558353C"      //"ZIOBANANA" "HtmMgyffEM4Mf4cH"
+#define WIFI_SSID "Vodafone-A47203440" //"STRONG_353C_2.4GHz"  // "OPPO Reno4 Z 5G" "Vodafone-A47203440"
+#define WIFI_PASSWORD "HtmMgyffEM4Mf4cH" //"737558353C"      //"ZIOBANANA" "HtmMgyffEM4Mf4cH"
 
 #define INFLUXDB_URL "http://93.186.254.118:8086"
 #define INFLUXDB_ORG "uniurb"
@@ -214,7 +214,7 @@ float elaboraDatoMedio()
   // Serial.println("accY: " + String(accY, 4));
   // Serial.println("accZ: " + String(accZ, 4));
 
-  accelerazioneMediaTot = sqrt((accX * accX) + (accY * accY) + (accZ * accZ)) - 9.81;
+  accelerazioneMediaTot = sqrt((accX * accX) + (accY * accY) + (accZ * accZ));
   accelerazioneMediaTot = roundf(accelerazioneMediaTot * 10000) / 10000;
 
   Serial.println("Accelerazione media bilanciere SX: " + String(accelerazioneMediaTot, 4));
@@ -231,7 +231,7 @@ float elaboraDatoMax()
   for (byte i = 0; i < D_MISURE; i++)
   {
 
-    perMax[i] = sqrt((AccX[i] * AccX[i]) + (AccY[i] * AccY[i]) + (AccZ[i] * AccZ[i])) - 9.81;
+    perMax[i] = sqrt((AccX[i] * AccX[i]) + (AccY[i] * AccY[i]) + (AccZ[i] * AccZ[i]));
 
     if (perMax[i] > accelerazioneMax)
     {
