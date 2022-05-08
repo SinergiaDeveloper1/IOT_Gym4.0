@@ -235,9 +235,17 @@ void readSensors()
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
-  aX = a.acceleration.x;
-  aY = a.acceleration.y;
-  aZ = a.acceleration.z;
+  /* controllo che i valori letti siano sensati, altrimenti li scarto */
+  if (a.acceleration.x < 5.0 && a.acceleration.x > -5.0) {
+    aX = a.acceleration.x;
+  }
+  if (a.acceleration.y < 10.0 && a.acceleration.y > -10.0) {
+    aY = a.acceleration.y;
+  }
+  if (a.acceleration.z < 16.0 && a.acceleration.z > -17.0) {
+    aZ = a.acceleration.z;
+  }
+
 }
 
 /* una volta scrivo il valore medio, una volta il max */
