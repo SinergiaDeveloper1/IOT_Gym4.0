@@ -20,7 +20,7 @@ Adafruit_MPU6050 mpu;
 #define INFLUXDB_BUCKET "test"
 #define INFLUXDB_TOKEN  "7q44Rz0f0IZYM4SYguqyPB5RPafXPEagZUpRuIUBp3aoDT3HVQzFg5c0Hg_RY8Khk8cH8MjuApdyQsKrFyaF4w=="
 
-#define D_MISURE 50
+#define D_MISURE 33
 
 /* in questa versione ho rimosso la tara sugli accelerometri */
 
@@ -136,9 +136,9 @@ void Task1code(void * pvParameters){
 
       flgInvia = true;
 
-      delay(10);
-
     }
+
+    delay(10);
 
   } 
 }
@@ -175,8 +175,13 @@ float elaboraDatoMedio()
   float accY = 0.0;
   float accZ = 0.0;
 
+  float appoggio = 0.0;
+
   for (byte i = 0; i < D_MISURE; i++)
   {
+
+    appoggio = sqrt((AccX[i] * AccX[i]) + (accY * accY) + (accZ * accZ));
+
     accX += AccX[i];
     accY += AccY[i];
     accZ += AccZ[i];

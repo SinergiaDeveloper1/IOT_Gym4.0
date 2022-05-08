@@ -20,7 +20,7 @@ Adafruit_MPU6050 mpu;
 #define INFLUXDB_BUCKET "esercitazioni"
 #define INFLUXDB_TOKEN "0s5ZuEkoUpmjulLxgpZfnXeiN1RU5tafsDkZ_bSdB-DzeDXQeN8k03ylXMREBwqYKd46oLq0Se8Qc13IjOuF-A=="
 
-#define D_MISURE 50
+#define D_MISURE 35
 
 /* in questa versione ho rimosso la tara sugli accelerometri */
 
@@ -41,14 +41,20 @@ TaskHandle_t Task2;
 float AccX[D_MISURE];
 float AccY[D_MISURE];
 float AccZ[D_MISURE];
+float Buffer_AccX[D_MISURE];
+float Buffer_AccY[D_MISURE];
+float Buffer_AccZ[D_MISURE];
 
 /* valori accelerazione */
-float aX, aY, aZ;   
+float aX = 0.0; 
+float aY = 0.0; 
+float aZ = 9.81;   
 float aMedia, aMax;
 
 /* contatori e flag */
 int cRaccoltaDati = 0;
 bool flgInvia = false;
+bool flgInviaBuffer = false;
 
 void setup()
 {
@@ -88,8 +94,7 @@ void setup()
   if (!mpu.begin())
   {
     Serial.println("Failed to find MPU6050 chip");
-    while (1)
-      ;
+    while (1);
   }
   Serial.println("MPU6050 Found!");
 
@@ -131,13 +136,13 @@ void Task1code( void * pvParameters ){
   Serial.print("Task1 running on core ");
   Serial.println(xPortGetCoreID());
 
-  /* loop del primo task */
+  /* loop del primo task - raccolta dati */
   for(;;){
     
     readSensors();
 
     /* raccolgo i dati */
-    if (cRaccoltaDati < D_MISURE)
+    if ((cRaccoltaDati < D_MISURE))
     {
 
       /* raccolgo i dati della discesa */
@@ -151,17 +156,27 @@ void Task1code( void * pvParameters ){
     else
     {
 
-      /* elaboro i dati e li invio a InfluxDB */
-      cRaccoltaDati = 0;
+      /* la prima volta che entro qui segnalo che devo effettuare l'invio a InfluxDB */
+      if (cRaccoltaDati == D_MISURE) {
+        flgInvia = true;
+      }
 
-      aMedia = elaboraDatoMedio();
-      aMax = elaboraDatoMax();
+      /* raccolgo i dati nel buffer intanto che li invia */
+      Buffer_AccX[cRaccoltaDati - D_MISURE] = aX;
+      Buffer_AccY[cRaccoltaDati - D_MISURE]= aY;
+      Buffer_AccZ[cRaccoltaDati - D_MISURE] = aZ;
 
-      flgInvia = true;
+      cRaccoltaDati++;
 
-      delay(10);
+      /* una volta riempito anche il buffer, azzero il contatore e segnalo che lo deve inviare */
+      if (cRaccoltaDati == (2 * D_MISURE)) {
+        cRaccoltaDati = 0;
+        flgInviaBuffer = true;
+      }
 
     }
+
+    delay(10);
 
   } 
 }
@@ -173,11 +188,18 @@ void Task2code( void * pvParameters ){
   /* loop del secondo task */
   for(;;){
     
-    if (flgInvia)
+    if (flgInvia || flgInviaBuffer)
     {
+
+      aMedia = elaboraDatoMedio();
+      aMax = elaboraDatoMax();
+
       writeToInfluxDb(aMedia, 0);
       writeToInfluxDb(aMax, 1);
+
       flgInvia = false;
+      flgInviaBuffer = false;
+
     }
     
     delay(10);
@@ -196,28 +218,22 @@ float elaboraDatoMedio()
 {
 
   float accelerazioneMediaTot = 0.0;
-  float accX = 0.0;
-  float accY = 0.0;
-  float accZ = 0.0;
 
   for (byte i = 0; i < D_MISURE; i++)
   {
-    accX += AccX[i];
-    accY += AccY[i];
-    accZ += AccZ[i];
+
+    accelerazioneMediaTot += sqrt((AccX[i] * AccX[i]) + (AccY[i] * AccY[i]) + (AccZ[i] * AccZ[i]));
+
   }
 
-  accX /= D_MISURE;
-  accY /= D_MISURE;
-  accZ /= D_MISURE;
+  accelerazioneMediaTot /= D_MISURE;
   // Serial.println("accX: " + String(accX, 4));
   // Serial.println("accY: " + String(accY, 4));
   // Serial.println("accZ: " + String(accZ, 4));
 
-  accelerazioneMediaTot = sqrt((accX * accX) + (accY * accY) + (accZ * accZ));
   accelerazioneMediaTot = roundf(accelerazioneMediaTot * 10000) / 10000;
 
-  Serial.println("Accelerazione media bilanciere SX: " + String(accelerazioneMediaTot, 4));
+  Serial.println("Accelerazione media bilanciere: " + String(accelerazioneMediaTot, 4));
 
   return (accelerazioneMediaTot);
 }
@@ -245,7 +261,7 @@ float elaboraDatoMax()
 
   accelerazioneMax = roundf(accelerazioneMax * 10000) / 10000;
 
-  Serial.println("Accelerazione Max bilanciere SX: " + String(accelerazioneMax, 4));
+  Serial.println("Accelerazione Max bilanciere: " + String(accelerazioneMax, 4));
 
   return (accelerazioneMax);
 }
@@ -258,24 +274,34 @@ void readSensors()
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
-  aX = a.acceleration.x;
-  aY = a.acceleration.y;
-  aZ = a.acceleration.z;
+  /* controllo che i valori letti siano sensati, altrimenti li scarto */
+  if (a.acceleration.x < 5.0 && a.acceleration.x > -5.0) {
+    aX = a.acceleration.x;
+  }
+  if (a.acceleration.y < 16.0 && a.acceleration.y > -16.0) {
+    aY = a.acceleration.y;
+  }
+  if (a.acceleration.z < 16.0 && a.acceleration.z > -16.0) {
+    aZ = a.acceleration.z;
+  }
+  
+  /* per vedere che dato prende */
+  Serial.println(aX);
+  Serial.println(aY);
+  Serial.println(aZ);
+
 }
 
 /* una volta scrivo il valore medio, una volta il max */
 void writeToInfluxDb(float a, int flgMedia0_Max1)
 {
-
   if (flgMedia0_Max1 == 0)
   {
-
     sensor.clearFields();
     sensor.addField("Accelerazione_Media_SX", a);
   }
   else
   {
-
     sensor.clearFields();
     sensor.addField("Accelerazione_Max_SX", a);
   }
