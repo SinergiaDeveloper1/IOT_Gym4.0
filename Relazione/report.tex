@@ -16,6 +16,9 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% SNIPPET UTILI %
+
+
 %----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
@@ -83,9 +86,9 @@
 
 \Abstract{
 	In questo elaborato abbiamo cercato di predisporre un'architettura per la raccolta dei dati
-	in una piccola home gym, innanzitutto per verificare la fattibilità del reperimento di alcune misurazioni, 
-	per poi passare all'analisi dei dati raccolti, sia per estrapolare delle metriche significative ai fini dell'allenamento, 
-	che delle caratteristiche termiche dell'ambiente.
+	in una piccola home gym, innanzitutto per verificare la fattibilità nel reperimento di alcune misurazioni, 
+	per poi passare all'analisi dei dati raccolti, con l'obiettivo di estrapolare delle metriche significative 
+	sia ai fini dell'allenamento, che dello studio delle caratteristiche termiche dell'ambiente.
 }
 
 %----------------------------------------------------------------------------------------
@@ -107,54 +110,87 @@
 % and some mathematics $\cos\pi=-1$ and $\alpha$ in the text\footnote{And some mathematics $\cos\pi=-1$ and $\alpha$ in the text.}
 %Questa è una citazione al libro di testo~\cite{milenkovic2020internet}.
 
-L'obiettivo preliminare di questo elaborato, era verificare la fattibilità dell'allestimento di un sistema di raccolta dati in una piccola home gym, 
-costruendo l'infrastruttura per 
+% \begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+% 	\item First item in a list
+% 	\item Second item in a list
+% 	\item Third item in a list
+% \end{enumerate}
 
-Come primo obiettivo di questo elaborato, ci siamo chiesti se fosse possibile raccogliere dei dati più o meno interessanti in termini di temperatura, umidità e 
+% \begin{equation}
+% 	\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
+% 	\label{eq:refname2}
+% \end{equation}
 
-%------------------------------------------------
+% \subsection{Subsection}
 
-\section{Methods}
+% \paragraph{Paragraph} \lipsum[7] % Dummy text
+% \paragraph{Paragraph} \lipsum[8] % Dummy text
+
+% \subsection{Subsection}
+
+% \lipsum[9] % Dummy text
+
+% Reference to Figure \ref{fig:results}.
+
+% \begin{figure}[ht]\centering
+% 	\includegraphics[width=\linewidth]{results}
+% 	\caption{In-text Picture}
+% 	\label{fig:results}
+% \end{figure}
+
+L'obiettivo preliminare di questo elaborato, era verificare la fattibilità dell'allestimento di un sistema di 
+raccolta dati in una piccola home gym, costruendo l'infrastruttura per far comunicare, 
+attraverso diversi protocolli, una rete di sensori.\\
+
+Tra le più disparate metriche di possibile interesse ai fini dello studio di una palestra, 
+sono state scelte due categorie di dati: da un lato i quelli relativi all'ambiente di allenamento, 
+dall'altro i dati sull'esecuzione degli esercizi.
+
+Per il progetto corrente, sono state dunque prese in analisi le metriche seguenti:
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	\item temperatura e umidità della stanza, prima durante e dopo l'allenamento
+	\item variazione di CO2 e TVOC (Total Volatile Organic Compounds)
+	\item accelerazione del bilanciere durante l'esecuzione di un esercizio campione
+\end{itemize}
+
+\section{Descrizione dell'ambiente}
+
+Funzionale alla comprensione di questo elaborato, è la descrizione dell'ambiente in cui è stata allestita 
+la palestra: si tratta di una stanza appartenente ad un vecchio immobile disabitato, appositamente 
+ristrutturata, le cui misure sono 5.05 x 4.95 metri, per un'altezza di 3.86 metri. \\
+
+L'ambiente presenta una finestra, una porta finestra e un'arcata di ingresso sulla quale sono state applicate 
+due tende, fissate con velcro ai lati del muro, come isolante dal resto del locale, in quanto non 
+sono presenti sistemi di riscaldamento centralizzato. Possiamo vederne una panoramica nell'immagine che segue 
+(Figura 1). \\
 
 \begin{figure*}[ht]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
-	\includegraphics[width=\linewidth]{view}
-	\caption{Wide Picture}
+	\includegraphics[width=\linewidth]{panoramica_palestra}
+	\caption{Visione panoramica dell'ambiente}
 	\label{fig:view}
 \end{figure*}
 
-\lipsum[4] % Dummy text
+Il primo punto di analisi è dunque diretta conseguenza di quanto appena detto: analizzare le performance 
+termiche dell'ambiente, per trovare il miglior metodo di riscaldamento durante i mesi invernali.\\
+Collegato a questo vi è il secondo punto in analisi: riscaldando un ambiente di circa 96 metri cubici, quanto 
+più possibile isolato dal resto del locale, abbiamo ritenuto importante monitorare la qualità dell'aria 
+durante l'allenamento.
 
-\begin{equation}
-	\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
-	\label{eq:refname2}
-\end{equation}
-
-\lipsum[5] % Dummy text
-
-\begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-	\item First item in a list
-	\item Second item in a list
-	\item Third item in a list
-\end{enumerate}
-
-\subsection{Subsection}
-
-\lipsum[6] % Dummy text
-
-\paragraph{Paragraph} \lipsum[7] % Dummy text
-\paragraph{Paragraph} \lipsum[8] % Dummy text
-
-\subsection{Subsection}
-
-\lipsum[9] % Dummy text
+\section{Scelta della terza metrica}
+Come abbiamo visto in precedenza, come terzo oggetto di studio è stata scelta l'accelerazione del bilanciere 
+durante l'esecuzione di un esercizio campione.
+L'esercizio preso in oggetto è la distensione su panca piana, di cui possiamo vedere uno schema in Figura 2, 
+ed è stato scelto in quanto ci garantiva il maggior grado di controllo sull'esecuzione, essendo uno degli 
+esercizi base di ogni allenamento. \\
+Risultava dunque un ottimo banco di prova sulla fattibilità si questo studio, visto che, data la popolarità 
+dell'esercizio, ci consentiva
 
 \begin{figure}[ht]\centering
-	\includegraphics[width=\linewidth]{results}
-	\caption{In-text Picture}
-	\label{fig:results}
+	\includegraphics[width=\linewidth]{panca_piana}
+	\caption{distensioni su panca piana}
+	\label{fig:panca_piana}
 \end{figure}
-
-Reference to Figure \ref{fig:results}.
 
 %------------------------------------------------
 
@@ -196,11 +232,7 @@ Reference to Figure \ref{fig:results}.
 
 \lipsum[13] % Dummy text
 
-\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-	\item First item in a list
-	\item Second item in a list
-	\item Third item in a list
-\end{itemize}
+
 
 \subsubsection{Subsubsection}
 
