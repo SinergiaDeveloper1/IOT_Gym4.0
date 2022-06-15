@@ -138,19 +138,25 @@
 % 	\label{fig:results}
 % \end{figure}
 
-L'obiettivo preliminare di questo elaborato, era verificare la fattibilità dell'allestimento di un sistema di 
-raccolta dati in una piccola home gym, costruendo l'infrastruttura per far comunicare, 
-attraverso diversi protocolli, una rete di sensori.\\
+% \begin{description}
+% 	\item[Word] Definition
+% 	\item[Concept] Explanation
+% 	\item[Idea] Text
+% \end{description}
+
+L'obiettivo preliminare di questo elaborato era verificare la fattibilità dell'allestimento di un sistema di 
+raccolta dati, in una piccola home gym, costruendo l'infrastruttura per far comunicare 
+attraverso diversi protocolli una rete di sensori.\\
 
 Tra le più disparate metriche di possibile interesse ai fini dello studio di una palestra, 
 sono state scelte due categorie di dati: da un lato i quelli relativi all'ambiente di allenamento, 
 dall'altro i dati sull'esecuzione degli esercizi.
 
-Per il progetto corrente, sono state dunque prese in analisi le metriche seguenti:
+Per il progetto corrente sono state dunque prese in analisi le metriche seguenti:
 
 \begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
 	\item temperatura e umidità della stanza, prima durante e dopo l'allenamento
-	\item variazione di CO2 e TVOC (Total Volatile Organic Compounds)
+	\item variazione di CO\textsubscript{2} e TVOC (Total Volatile Organic Compounds)
 	\item accelerazione del bilanciere durante l'esecuzione di un esercizio campione
 \end{itemize}
 
@@ -163,13 +169,7 @@ ristrutturata, le cui misure sono 5.05 x 4.95 metri, per un'altezza di 3.86 metr
 L'ambiente presenta una finestra, una porta finestra e un'arcata di ingresso sulla quale sono state applicate 
 due tende, fissate con velcro ai lati del muro, come isolante dal resto del locale, in quanto non 
 sono presenti sistemi di riscaldamento centralizzato. Possiamo vederne una panoramica nell'immagine che segue 
-(Figura 1). \\
-
-\begin{figure*}[ht]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
-	\includegraphics[width=\linewidth]{panoramica_palestra}
-	\caption{Visione panoramica dell'ambiente}
-	\label{fig:view}
-\end{figure*}
+(Figura 2). \\
 
 Il primo punto di analisi è dunque diretta conseguenza di quanto appena detto: analizzare le performance 
 termiche dell'ambiente, per trovare il miglior metodo di riscaldamento durante i mesi invernali.\\
@@ -178,69 +178,133 @@ più possibile isolato dal resto del locale, abbiamo ritenuto importante monitor
 durante l'allenamento.
 
 \section{Scelta della terza metrica}
-Come abbiamo visto in precedenza, come terzo oggetto di studio è stata scelta l'accelerazione del bilanciere 
-durante l'esecuzione di un esercizio campione.
-L'esercizio preso in oggetto è la distensione su panca piana, di cui possiamo vedere uno schema in Figura 2, 
-ed è stato scelto in quanto ci garantiva il maggior grado di controllo sull'esecuzione, essendo uno degli 
-esercizi base di ogni allenamento. \\
-Risultava dunque un ottimo banco di prova sulla fattibilità si questo studio, visto che, data la popolarità 
-dell'esercizio, ci consentiva
+Come abbiamo visto in precedenza, come terzo oggetto di studio è stata presa in analisi l'accelerazione del bilanciere 
+durante l'esecuzione di un esercizio campione.\\
+L'esercizio selezionato è la distensione su panca piana, scelto in quanto ci garantiva il maggior grado di controllo 
+sull'esecuzione, essendo uno degli esercizi base di ogni allenamento. Ne possiamo vedere uno schema in Figura 1.\\
 
-\begin{figure}[ht]\centering
+La popolarità di tale esercizio ci garantiva inoltre buone potenzialità di espansione di questo studio, ad un 
+ampio campione di tester, nel caso fossimo riusciti a standardizzare il più possibile il metodo di acquisizione dei dati.
+
+\begin{figure}[htb!]\centering
 	\includegraphics[width=\linewidth]{panca_piana}
 	\caption{distensioni su panca piana}
 	\label{fig:panca_piana}
 \end{figure}
 
+\begin{figure*}[ht]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[width=\linewidth]{panoramica_palestra}
+	\caption{Visione panoramica dell'ambiente}
+	\label{fig:view}
+\end{figure*}
+
 %------------------------------------------------
 
-\section{Risultati}
+\section{Allestimento dell'infrastruttura}
 
-\lipsum[10] % Dummy text
+La prima necessità è stata dunque quella di creare l'infrastruttura attraverso la quale sarebbe avvenuta la 
+comunicazione dei dati.\\
+A livello di rete e internet sono stati fatti diversi tentativi, prima con due diversi router extender che 
+prolungavano una casalinga fino al locale della palestra, e poi con un router con scheda SIM 
+situato direttamente in loco. La prima soluzione è stata scartata in quanto, ad una distanza in linea d'aria 
+dal router di casa di circa cinquanta metri, senza considerare i muri, la connessione era troppo instabile.\\
 
-\subsection{Subsection}
+A questa rete è stato poi collegato un Raspberry Pi 4 che ha fatto sia da broker MQTT (di cui parleremo in seguito), 
+che da semplice computer per la raccolta e visualizzazione dei dati, come vediamo in Figura 3.
 
-\lipsum[11] % Dummy text
+\begin{figure}[htb!]\centering
+	\includegraphics[width=\linewidth]{schermo_dati}
+	\caption{Raspberry e monitor}
+	\label{fig:schermo}
+\end{figure}
+
+\subsection{I sensori utilizzati}
+
+Per raccogliere i dati sono stati utilizzati i seguenti sensori:
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	\item due DHT11 per temperatura e umidità
+	\item due DHT22 per temperatura e umidità
+	\item un CCS811 per CO\textsubscript{2} e TVOC
+	\item due GY-521 MPU-6050 per l'accelerazione
+\end{itemize}
+
+Si è scelto di collegare gli accelerometri a dei moduli di sviluppo ESP32 mini, potendo così accedere ad 
+un'architettura double core, mentre tutti gli altri sensori sono stati collegati a delle normali ESP8266. 
+Abbiamo adottato sensori DHT11 e DHT22 per temperatura e umidità, potendo così avere un confronto nella 
+precisione dei due: vediamo le differenze tra le loro specifiche nella tabella che segue.
 
 \begin{table}[hbt]
-	\caption{Table of Grades}
+	\caption{Specifiche DHT}
 	\centering
-	\begin{tabular}{llr}
+	\begin{tabular}{lcc}
 		\toprule
-		\multicolumn{2}{c}{Name} \\
-		\cmidrule(r){1-2}
-		First name & Last Name & Grade \\
+			 & \textbf{DHT11} & \textbf{DHT22} \\
 		\midrule
-		John & Doe & $7.5$ \\
-		Richard & Miles & $2$ \\
+		Range umidità & 20-90\% & 0-100\% \\
+		Precisione umidità & ±5\% & ±2\% \\
+		Range temperatura & 0-50 °C & -40 +80 °C \\
+		Precisione temperatura & ±2\% & ±0.5\% \\
+		Tempo di lettura & 6-10 s & 2 s \\
 		\bottomrule
 	\end{tabular}
 	\label{tab:label}
 \end{table}
 
+Nelle tre immagini che seguono (Figure 4, 5, 6) sono mostrati gli schemi dei circuiti costruiti: 
+
+\begin{figure}[htb!]\centering
+	\includegraphics[scale=0.5]{DHT}
+	\caption{ESP8266 - DHT11/22}
+	\label{fig:schermo}
+\end{figure}
+
+\begin{figure}[htb!]\centering
+	\includegraphics[scale=0.5]{CCS811}
+	\caption{ESP8266 - CCS811}
+	\label{fig:schermo}
+\end{figure}
+
+\begin{figure}[htb!]\centering
+	\includegraphics[scale=0.5]{Schema_accelerometro}
+	\caption{ESP32 - MPU-6050}
+	\label{fig:schermo}
+\end{figure}
+
+Per motivi che vedremo in seguito, due postazioni di rilevamento della temperatura e dell'umidità sono state 
+implementate con batteria e un meccanismo di deep sleep per il risparmio energetico, nei relativi circuiti erano 
+dunque presenti i collegamenti per una batteria da 650 mA e un jumper per consentire la programmazione del modulo.
+
+\subsubsection{Gli accelerometri e i loro obiettivi}
+
+Un discorso a parte va fatto per gli accelerometri, che costituiscono la parte principale di questo studio.\\
+Innanzitutto è necessario chiarire l'obiettivo dell'analisi, ovvero cercare di registrare 
+se, nell'esecuzione di un qualsiasi esercizio che coinvolga il sollevamento di un bilanciere, si rilevano delle 
+imperfezioni, da cogliere attraverso le differenze nelle accelerazioni agli estremi dell'attrezzo: se un accelerometro 
+posto a un estremo del bilanciere, avesse riscontrato accelerazioni diverse da quelle registrate 
+all'estremo opposto, sarebbe stato possibile individuare delle imperfezioni nell'esecuzione dell'esercizio, 
+dandoci così un feedback sulla qualità dello stesso, ed eventuali indicazioni per migliorarlo.\\
+
+Con questo obiettivo in mente abbiamo ritenuto imprescindibile che entrambi i moduli fossero alimentati a batteria, 
+per evitare perturbazioni nelle misurazioni dovute ad eventuali interferenze dei fili di alimentazione. Questo ha però 
+aumentato la difficoltà nella costruzione del "sistema accelerometro", che includendo ora anche una batteria, 
+diventava più ingombrante e difficilmente stabilizzabile sul bilanciere.\\
+
+La soluzione che abbiamo adottato è stata quella di costruire delle piccole scatole di plastica, appositamente 
+progettate in base alle misure del modulo ESP32 mini col sensore e la batteria. Queste scatole sono state poi fissate 
+agli anelli di bloccaggio dei dischi al bilanciere. Ne possiamo vedere il risultato nella Figura 7.
+
+
+\section{Risultati}
+
+\subsection{Subsection}
+
+
 \subsubsection{Subsubsection}
 
-\lipsum[12] % Dummy text
-
-\begin{description}
-	\item[Word] Definition
-	\item[Concept] Explanation
-	\item[Idea] Text
-\end{description}
-
 \subsubsection{Subsubsection}
-
-\lipsum[13] % Dummy text
-
-
-
-\subsubsection{Subsubsection}
-
-\lipsum[14] % Dummy text
 
 \section{Conclusioni}
-
-\lipsum[15-23] % Dummy text
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
