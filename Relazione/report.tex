@@ -177,7 +177,7 @@ Collegato a questo vi è il secondo punto in analisi: riscaldando un ambiente di
 più possibile isolato dal resto del locale, abbiamo ritenuto importante monitorare la qualità dell'aria 
 durante l'allenamento.
 
-\section{Scelta della terza metrica}
+\subsection{La terza metrica}
 Come abbiamo visto in precedenza, come terzo oggetto di studio è stata presa in analisi l'accelerazione del bilanciere 
 durante l'esecuzione di un esercizio campione.\\
 L'esercizio selezionato è la distensione su panca piana, scelto in quanto ci garantiva il maggior grado di controllo 
@@ -200,7 +200,12 @@ ampio campione di tester, nel caso fossimo riusciti a standardizzare il più pos
 
 %------------------------------------------------
 
-\section{Allestimento dell'infrastruttura}
+\section{Gli strumenti utilizzati}
+
+In questa sezione porremo l'attenzione sugli strumenti di indagine utilizzati, sulla loro costruzione, 
+e sulle scelte di progetto e implementazione adottate.
+
+\subsection{Allestimento dell'infrastruttura}
 
 La prima necessità è stata dunque quella di creare l'infrastruttura attraverso la quale sarebbe avvenuta la 
 comunicazione dei dati.\\
@@ -213,7 +218,7 @@ A questa rete è stato poi collegato un Raspberry Pi 4 che ha fatto sia da broke
 che da semplice computer per la raccolta e visualizzazione dei dati, come vediamo in Figura 3.
 
 \begin{figure}[htb!]\centering
-	\includegraphics[width=\linewidth]{schermo_dati}
+	\includegraphics[scale=0.32]{schermo_dati}
 	\caption{Raspberry e monitor}
 	\label{fig:schermo}
 \end{figure}
@@ -256,26 +261,40 @@ Nelle tre immagini che seguono (Figure 4, 5, 6) sono mostrati gli schemi dei cir
 \begin{figure}[htb!]\centering
 	\includegraphics[scale=0.5]{DHT}
 	\caption{ESP8266 - DHT11/22}
-	\label{fig:schermo}
+	\label{fig:DHT11/22}
 \end{figure}
 
 \begin{figure}[htb!]\centering
 	\includegraphics[scale=0.5]{CCS811}
 	\caption{ESP8266 - CCS811}
-	\label{fig:schermo}
+	\label{fig:CCS811}
 \end{figure}
 
 \begin{figure}[htb!]\centering
 	\includegraphics[scale=0.5]{Schema_accelerometro}
 	\caption{ESP32 - MPU-6050}
-	\label{fig:schermo}
+	\label{fig:MPU-6050}
 \end{figure}
 
-Per motivi che vedremo in seguito, due postazioni di rilevamento della temperatura e dell'umidità sono state 
-implementate con batteria e un meccanismo di deep sleep per il risparmio energetico, nei relativi circuiti erano 
-dunque presenti i collegamenti per una batteria da 650 mA e un jumper per consentire la programmazione del modulo.
+\subsubsection{I sensori per i dati ambientali e il loro obiettivo}
+Tenendo a mente il primo punto di indagine indicato in questo elaborato, ovvero analizzare i dati ambientali, passiamo 
+ora a descrivere le relative scelte di progetto.\\
+Fare uno studio accurato delle performance termiche di un ambiente richiede una grande quantità di dati, sia a livello 
+di caratteristiche ingegneristiche e architettoniche dell'ambiente, che dei materiali di costruzione, informazioni 
+alle quali non avevamo completo accesso. Potevamo tuttavia estrapolarle e farne una buona stima, sia attraverso 
+l'analisi in loco di periti tecnici, che dai dati restituiti dai sensori.\\
 
-\subsubsection{Gli accelerometri e i loro obiettivi}
+Il dato che si è scelto di ricercare è la dispersione del calore dall'ambiente, che costituisce un buon aggregato e 
+indice delle performance termiche della stanza.\\
+Per ottenere tale informazione si è scelto di utilizzare i quattro sensori DHT di cui sopra come segue: due sono stati 
+posizionati a due angoli della stanza, per ottenere la temperatura media interna, uno fuori dall'edificio per la 
+temperatura esterna, e uno appena fuori dall'ingresso della palestra, comunque in un ambiente interno, ma non riscaldato.
+\\
+Le due postazioni di rilevamento di temperatura e umidità esterne alla stanza sono state dunque
+implementate con batteria e un meccanismo di deep sleep per il risparmio energetico, nei relativi circuiti erano 
+quindi presenti i collegamenti per una batteria da 650 mA e un jumper per consentire la programmazione del modulo.
+
+\subsubsection{Gli accelerometri e il loro obiettivo}
 
 Un discorso a parte va fatto per gli accelerometri, che costituiscono la parte principale di questo studio.\\
 Innanzitutto è necessario chiarire l'obiettivo dell'analisi, ovvero cercare di registrare 
@@ -290,12 +309,65 @@ per evitare perturbazioni nelle misurazioni dovute ad eventuali interferenze dei
 aumentato la difficoltà nella costruzione del "sistema accelerometro", che includendo ora anche una batteria, 
 diventava più ingombrante e difficilmente stabilizzabile sul bilanciere.\\
 
-La soluzione che abbiamo adottato è stata quella di costruire delle piccole scatole di plastica, appositamente 
-progettate in base alle misure del modulo ESP32 mini col sensore e la batteria. Queste scatole sono state poi fissate 
-agli anelli di bloccaggio dei dischi al bilanciere. Ne possiamo vedere il risultato nella Figura 7.
+La soluzione che abbiamo adottato è stata quella di costruire delle scatole di plastica, appositamente 
+progettate in base alle misure del modulo ESP32 col sensore e la batteria. Per minimizzare le vibrazioni e i 
+movimenti interni alla scatola, sono stati poi inseriti degli spessori in gommapiuma e dei tappi in plastica, 
+aumentando così la stabilità del sistema. Ogni scatola presenta inoltre un foro per accedere alla porta USB dell'ESP32 
+per le future programmazioni del modulo.\\
+Ne possiamo vedere il risultato nella Figura 7.
 
+\begin{figure}[htb!]\centering
+	\includegraphics[width=\linewidth]{scatole_accelerometri}
+	\caption{Scatola con accelerometro}
+	\label{fig:modulo accelerometro}
+\end{figure}
 
-\section{Risultati}
+Queste scatole sono state poi fissate agli anelli di bloccaggio dei dischi al bilanciere, come vediamo in Figura 8.
+
+\begin{figure}[htb!]\centering
+	\includegraphics[scale=0.15]{disco_bilanciere}
+	\caption{Anello di bloccaggio dischi su bilanciere}
+	\label{fig:anello di bloccaggio}
+\end{figure}
+
+Aggiungiamo inoltre che i bilancieri utilizzati per questi test sono bilancieri standard olimpici, di cui riportiamo 
+le misure nell'immagine che segue (Figura 9), che hanno, e questo vedremo in seguito che risulterà critico, 
+la caratteristica di avere la zona di fissaggio dei pesi capace di ruotare attorno all'asse del bilanciere. \\
+Tale accorgimento tecnico si utlizza per minimizzare la rotazione, e le conseguenti accelerazione e variazione 
+di momento angolare del sistema, in fase di movimento del carico: un'improvvisa rotazione del bilanciere attorno 
+al suo asse orizzontale non comporta così la rotazione dei pesi, che causerebbe maggiore instabilità nell'esercizio.
+
+\begin{figure}[htb!]\centering
+	\includegraphics[width=\linewidth]{bilanciere}
+	\caption{Misure bilanciere olimpico}
+	\label{fig:bilanciere}
+\end{figure}
+
+Prima di passare alla raccolta e analisi dei dati ci è doveroso aggiungere che tutti i microcontrollori sono stati 
+programmati tramite Arduino. Eventuali particolarità o dettagli specifici di implementazione saranno affrontati in fase 
+di analisi dei dati. \\
+Tutto il codice è comunque consultabile nella repository GitHub indicata in bibliografia.
+
+\section{Raccolta dati}
+
+I dati sono stati raccolti su un server remoto sul quale è stato installato \textit{influxdb}, un database open source 
+per serie temporali, particolarmente adatto ad applicazioni IOT.\\
+
+Dei sette sensori di cui si è discusso, cinque comunicavano tramite il modulo WiFi del microcontrollore collegandosi 
+direttamente al server remoto.\\
+Per i due moduli con DHT11 posizionati fuori dalla palestra, quello interno al locale, e quello esterno all'edificio 
+(per maggior chiarezza si faccia riferimento alla Figura 10) si è optato per una soluzione differente: essendo 
+alimentati a batteria, abbiamo scelto di utilizzare due tecnologie particolarmente adatte al risparmio energetico; 
+come protocollo di comunicazione si è scelto MQTT (Message Queuing Telemetry Transport), particolarmente meno 
+energivoro del classico WiFi, con il Raspberry Pi 4, come precedentemente detto, che funge da broker, e i due sensori 
+da client. \\
+Per l'invio dei dati su influxdb è stato poi appositamente configurato su Raspberry un \textit{plugin telegraf}.\\
+La seconda tecnologia per il risparmio energetico è più che altro un accorgimento a livello implementativo: invece di 
+programmare i sensori con la classica modalità, ovvero in loop continuo, si è scelto di adottare il \textit{deep sleep}, 
+ovvero alla fine di ogni lettura e invio dati, i moduli vengono letteralmente addormentati, lasciando attivo il Real 
+Time Clock (RTC), che si occupa di risvegliare il sistema dopo un preimpostato intervallo di tempo.\\
+Nel nostro caso abbiamo visto che la durata della batteria, con questo accorgimento, è praticamente decupliata, 
+passando da circa cinque ore a oltre due giorni.
 
 \subsection{Subsection}
 
