@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex report"] 1655593957 "report.aux" "report.bbl" "report" 1655594895
+["bibtex report"] 1655682540 "report.aux" "report.bbl" "report" 1655682542
   "C:/Users/lucac/AppData/Local/Programs/MiKTeX/bibtex/bst/bibtex/unsrt.bst" 1291868336 18030 1376b4b231b50c66211e47e42eda2875 ""
-  "report.aux" 1655594894 6567 b1a83e54b5ccb49e93bc152c85b2b3bf "pdflatex"
+  "report.aux" 1655682542 7018 d323359c555856617ec98aeedd9e4323 "pdflatex"
   "sample.bib" 1644253514 554 ff5ec2cf02f87a90aae289d5f78f6796 ""
   (generated)
   "report.bbl"
   "report.blg"
-["pdflatex"] 1655594892 "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" "report.pdf" "report" 1655594895
+["pdflatex"] 1655682540 "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" "report.pdf" "report" 1655682542
   "C:/Users/lucac/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1653661998 82507 a9eef8696c92627b87e9975edea03b2a ""
   "C:/Users/lucac/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1653584978 10252455 40ab635b14eebed57af7c696c43bbfec ""
   "C:/Users/lucac/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458477487 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
@@ -139,22 +139,23 @@
   "Figures//DHT.jpg" 1655220244 108941 4cd41d3989d0665f488ed33a121c3f1f ""
   "Figures//Schema_accelerometro.jpg" 1655222482 160724 10f366eb9e9d6242cb7c9db328304d9a ""
   "Figures//bilanciere.jpg" 1655312439 51589 a2f7a52d0f0fcd0706a3b6a4f07a53de ""
-  "Figures//co2_dati_2102.jpg" 1655594891 101162 198e45b147381598ff5f3fd126902f2c ""
+  "Figures//co2_2102.jpg" 1655665758 49799 e500009cfeebdc9781e998cc8ebbac06 ""
   "Figures//disco_bilanciere.jpeg" 1655311372 176878 06a7c29a7c5fe7c051424df5d2647517 ""
   "Figures//panca_piana.jpg" 1653924681 119260 1d726c9287740bc0ec53823a44e36b7e ""
   "Figures//panoramica_palestra.jpeg" 1653654328 89268 8439ff251f6f52be8eb831b15ca25b33 ""
   "Figures//pianta_palestra.jpg" 1655428020 143727 6bd77757590a97c3d6ef6124ac82ae44 ""
   "Figures//scatole_accelerometri.jpeg" 1655310926 302740 4c7b54551c7aaf84dbaaf3926bd1f334 ""
   "Figures//schermo_dati.jpeg" 1655375482 137049 50361d0a3a39cb214b9acdb159947149 ""
-  "Figures//temperature_dati_2102.jpg" 1655593736 104634 ceaa742da90054eb20199945063da6ef ""
+  "Figures//tabella_dati.jpg" 1655682443 341216 98231de47d0a90baee4f14004779879b ""
+  "Figures//temperature_2102.jpg" 1655665663 63515 cc0adee3c1b00bf90af168da2d972f8a ""
   "Figures//termoventilatore.jpeg" 1653920703 1009591 549f83ab17e2ab68ce88fe3d8be3dddd ""
-  "Figures//umidita_dati_2102.jpg" 1655594431 206781 f5787e842f51229886de93c4af6d1b9f ""
+  "Figures//umidita_2102.jpg" 1655665694 71819 ae63256ce62ed7cc0559c6dbb6651af7 ""
   "SelfArx.cls" 1644253514 8092 737c8d1591f9545f221c870f69e6d87b ""
-  "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" 1655594524 22452 678e65f16190d7f923b2d06f2b400580 ""
-  "report.aux" 1655594894 6567 b1a83e54b5ccb49e93bc152c85b2b3bf "pdflatex"
-  "report.bbl" 1655593957 52 0eba253fc001332e731e8aba3f23127b "bibtex report"
-  "report.out" 1655594894 2513 88bb0cf4e0a415482766707f2ecff719 "pdflatex"
-  "report.tex" 1655594524 22452 678e65f16190d7f923b2d06f2b400580 ""
+  "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" 1655682536 26423 9fbf22478189650c9b5123c6c2f894af ""
+  "report.aux" 1655682542 7018 d323359c555856617ec98aeedd9e4323 "pdflatex"
+  "report.bbl" 1655682540 52 0eba253fc001332e731e8aba3f23127b "bibtex report"
+  "report.out" 1655682542 2775 143034b0df6b3318ecbb7cebfc8f2c3e "pdflatex"
+  "report.tex" 1655682536 26423 9fbf22478189650c9b5123c6c2f894af ""
   (generated)
   "report.aux"
   "report.log"

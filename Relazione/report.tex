@@ -156,7 +156,7 @@ Per il progetto corrente sono state dunque prese in analisi le metriche seguenti
 
 \begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
 	\item temperatura e umidità della stanza, prima durante e dopo l'allenamento
-	\item variazione di CO\textsubscript{2} e TVOC (Total Volatile Organic Compounds)
+	\item variazione di eCO\textsubscript{2} e eTVOC (equivalent Total Volatile Organic Compounds)
 	\item accelerazione del bilanciere durante l'esecuzione di un esercizio campione
 \end{itemize}
 
@@ -229,7 +229,7 @@ Per raccogliere i dati sono stati utilizzati i seguenti sensori:
 
 \begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
 	\item due DHT11 e due DHT22 per temperatura e umidità
-	\item un CCS811 per CO\textsubscript{2} e TVOC
+	\item un CCS811 per eCO\textsubscript{2} e eTVOC
 	\item due GY-521 MPU-6050 per l'accelerazione
 \end{itemize}
 
@@ -297,7 +297,13 @@ contenuti, dell'ordine di dieci/quindici minuti (chiaramente in base alla temper
 necessario spegnerlo per non surriscaldare l'ambiente. Questo comporta però un crollo della temperatura pressoché 
 immediato. Si è scelto dunque di inserire una stufa da 3 KW il cui compito è quello di mantenere la temperatura costante.\\
 Alla luce di quanto detto, assume ancora più importanza la seconda metrica oggetto di studio, ovvero la 
-variazione di CO\textsubscript{2} e TVOC (Total Volatile Organic Compounds), come monitor indiretto della qualità dell'aria.\\
+variazione di eCO\textsubscript{2} e eTVOC (equivalent Total Volatile Organic Compounds), come monitor indiretto della 
+qualità dell'aria.\\
+Importante ricordare a tal proposito che il sensore CCS811 non misura direttamente l'anidride carbonica o i composti organici 
+volatili, ma misura la quantità equivalente di impurità nell'aria per ottenere quelle letture del sensore: in altre parole, 
+il sensore legge determinati dati di qualità dell'aria, tali dati possono essere dati dalla presenza di CO\textsubscript{2}, 
+o da composti organici equivalenti capaci di dare quel tipo di letture. È una sottigliezza ininfluente ai fini dell'elaborato, 
+ma per dovere di chiarezza ne abbiamo ritenuto necessaria la precisazione.\\
 
 Data questa premessa passiamo ora a descrivere le relative scelte di progetto.\\
 Fare uno studio accurato delle performance termiche di un ambiente richiede una grande quantità di dati, sia a livello 
@@ -382,7 +388,7 @@ direttamente al server remoto.\\
 
 \begin{figure}[htb!]\centering
 	\includegraphics[width=\linewidth]{pianta_palestra}
-	\caption{Pianta palestra. Non in scala}
+	\caption{Pianta della palestra. Non in scala}
 	\label{fig:pianta palestra}
 \end{figure}
 
@@ -407,35 +413,87 @@ Nell'immagine che segue (Figura 12) vediamo uno dei due sensori in oggetto.
 	\label{fig:DHT11 MQTT}
 \end{figure}
 
-\subsection{Dati ambientali durante l'allenamento}
+\section{I dati ambientali durante l'allenamento}
 
 Premettiamo che tutti i dati sono disponibili sia in forma aggregata che estensivamente nella repository GitHub indicata 
 in bibliografia, oltre ad essere consultabili direttamente sul server influxdb.\\
 Passiamo ora vedere i dati raccolti, relativi ad una data campione particolarmente indicativa, in cui è stata utilizzata 
-la palestra. Alleghiamo i grafici estratti da influxdb nelle immagini che seguono (Figure 13, 14, 15), con allegati 
-i dati in alcuni momenti significativi.\\
-Le linee azzurre e viola sono relative ai due sensori interni, quella arancio 
-al sensore fuori dall'ingresso, quella magenta al sensore esterno.
+la palestra. Alleghiamo i grafici estratti da influxdb nelle immagini che seguono (Figure 13, 14, 15), e 
+condensati nella tabella in Figura 16.\\
 
-\begin{figure}[htb!]\centering
-	\includegraphics[width=\linewidth]{temperature_dati_2102}
-	\caption{Variazione temperatura}
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{temperature_2102}
+	\caption{Temperatura in gradi Celsius}
 	\label{fig:Variazione temperatura}
 \end{figure}
-\begin{figure}[htb!]\centering
-	\includegraphics[width=\linewidth]{umidita_dati_2102}
-	\caption{Variazione umidità}
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{umidita_2102}
+	\caption{Umidità in percentuale}
 	\label{fig:Variazione umidità}
 \end{figure}
-\begin{figure}[htb!]\centering
-	\includegraphics[width=\linewidth]{co2_dati_2102}
-	\caption{Variazione CO\textsubscript{2} e TVOC}
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{co2_2102}
+	\caption{eCO\textsubscript{2} in ppm e eTVOC in ppb}
 	\label{fig:Variazione CO2}
 \end{figure}
 
+Le linee azzurre e viola sono relative ai due sensori interni, quella arancio 
+al sensore fuori dall'ingresso, quella magenta al sensore esterno.
+
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{tabella_dati}
+	\captionsetup{width=\linewidth}
+	\caption{dati condensati in timestamp significativi}
+	\label{fig:tabella dati}
+\end{figure}
+
+\subsection{Analisi dei dati ambientali}
+Iniziamo questa analisi da una descrizione più approfondita dei grafici precedentemente allegati.\\
+Come possiamo vedere in tabella, sono stati indicati dei timestamp significativi: 
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	\item 18:55, inizio dell'allenamento e accensione di stufa e generatore di calore
+	\item 19:08, spegnimento del generatore di calore 
+	\item 19:30 e 19:01, due intertempi per mostrare l'andamento durante l'allenamento
+	\item 20:27, spegnimento della stufa
+	\item 20:37, fine allenamento
+\end{itemize}
+
+La variazione più importante in tutti gli indicatori avviene mentre il generatore di calore a GPL è 
+acceso; vediamo infatti che le temperature interne hanno una rapidissima crescita, parallela ad un 
+crollo dell'umidità. Molto positivo è inoltre il fatto che la qualità dell'aria non degradi troppo 
+significativamente, registrando solo un picco nella quantità di anidride carbonica (e/o suoi composti 
+equivalenti), comunque inferiore a qualla generata dal metabolismo durante l'allenamento.\\
+Particolarmente interessante risulta l'andamento della temperatura registrata dal sensore posizionato 
+appena fuori dall'ingresso della stanza (linea arancio del grafico in Figura 13), che in questa fase 
+presenta a sua volta un aumento, mostrando chiaramente, come era intuibile, i problemi di isolamento
+termico dovuti alla separazione degli ambienti ottenuta soltanto tramite due tende in tessuto sintetico.\\
+Il discostamento tra i valori della temperatura interna è invece spiegato dall'orientamento della stufa 
+elettrica, che evidentemente genera un flusso di aria calda più indirizzato verso uno dei sensori.\\
+
+Dallo spegnimento del generatore GPL in poi, si nota chiaramente una discesa della temperatura della 
+palestra fino ad un punto di stabilità, ovvero una situazione in cui il calore generato dalla stufa 
+elettrica e dal metabolismo di chi si allena, è eguagliato dal calore disperso.\\
+I due sensori esterni alla palestra mostrano un andamento banale, ovvero di graduale stabilizzazione 
+attorno alla temperatura atmosferica per il sensore esterno, e alla temperatura dell'edificio per quello 
+fuori dall'ingresso. Per questi ultimi sensori non è di interesse, ai fini dell'elaborato, l'andamento 
+dell'umidità.
+\\
+Torna invece ad essere di particolare interesse notare come le curve di CO\textsubscript{2} e 
+umidità abbiano un andamento correlato: i loro aumenti sono dovuti al metabolismo di chi si allena, 
+che emette costantemente anidride carbonica, vapore acqueo e composti organici di varia natura.\\
+
+Nella fase terminale dell'allenamento sono da registrarsi due fattori: da un lato lo spegnimento della 
+stufa causa l'ovvio abbassamento della temperatura interna, e la sua convergenza verso un unico valore; 
+dall'altro vediamo un difficilmente spiegabile aumento sia dell'umidità che di CO\textsubscript{2} e TVOC.
+Questi sono invece dovuti alla natura dell'allenamento svolto, che prevedeva una forte componente aerobica 
+sul finale, ben testimoniata dai grafici riportati.\\
+
+\subsection{Analisi delle accelerazioni}
+
 \section{Analisi dei dati}
 
-\subsubsection{Subsubsection}
+
 
 \subsubsection{Subsubsection}
 
