@@ -324,7 +324,7 @@ programmazione del modulo.
 
 \subsubsection{Gli accelerometri e il loro obiettivo}
 
-Un discorso a parte va fatto per gli accelerometri, che costituiscono la parte principale, nonché di maggiore interesse 
+Un discorso a parte va fatto per gli accelerometri, che per noi costituivano l'argomento di maggiore interesse 
 di questo studio.\\
 Innanzitutto è necessario chiarire l'obiettivo dell'analisi, ovvero cercare di registrare 
 se, nell'esecuzione di un qualsiasi esercizio che coinvolga il sollevamento di un bilanciere, si rilevano delle 
@@ -417,6 +417,7 @@ Nell'immagine che segue (Figura 12) vediamo uno dei due sensori in oggetto.
 
 Premettiamo che tutti i dati sono disponibili sia in forma aggregata che estensivamente nella repository GitHub indicata 
 in bibliografia, oltre ad essere consultabili direttamente sul server influxdb.\\
+
 Passiamo ora vedere i dati raccolti, relativi ad una data campione particolarmente indicativa, in cui è stata utilizzata 
 la palestra. Alleghiamo i grafici estratti da influxdb nelle immagini che seguono (Figure 13, 14, 15), e 
 condensati nella tabella in Figura 16.\\
@@ -484,12 +485,99 @@ umidità abbiano un andamento correlato: i loro aumenti sono dovuti al metabolis
 che emette costantemente anidride carbonica, vapore acqueo e composti organici di varia natura.\\
 
 Nella fase terminale dell'allenamento sono da registrarsi due fattori: da un lato lo spegnimento della 
-stufa causa l'ovvio abbassamento della temperatura interna, e la sua convergenza verso un unico valore; 
+stufa causa l'ovvio abbassamento della temperatura interna e la sua convergenza verso un unico valore; 
 dall'altro vediamo un difficilmente spiegabile aumento sia dell'umidità che di CO\textsubscript{2} e TVOC.
 Questi sono invece dovuti alla natura dell'allenamento svolto, che prevedeva una forte componente aerobica 
 sul finale, ben testimoniata dai grafici riportati.\\
 
 \subsection{Analisi delle accelerazioni}
+
+A differenza del paragrafo precedente, per quanto riguarda gli accelerometri i grafici verranno analizzati 
+singolarmente, in quanto ognuno, pur facendo riferimento alla stessa tipologia di esercizio, eseguito nel 
+modo più controllato possibile, è specchio di differenti implementazioni a livello di codice, ogni volta alla 
+ricerca di maggior pulizia e indicatività nei dati raccolti.\\
+Ogni esercizio è stato svolto in blocchi di quattro serie da otto/dieci ripetizioni ognuna, con circa 90 
+secondi di pausa tra una serie e l'altra (col termine "ripetizione" si intende una discesa e risalita complete 
+del bilanciere).
+
+Prima di passare all'analisi di grafici, schematizziamo i dettagli generali della prima implementazione, 
+evidenziandone in seguito solo le modifiche sostanziali. Il codice completo e la sua storia, al solito, 
+è disponibile nella repository GitHub. 
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	\item All'accensione del sensore seguono dieci secondi di "buffer" in cui si permetteva all'utente di 
+	posizionare e stabilizzare il modulo. Terminata questa fase di attesa, veniva effettuata la tara 
+	sull'accelerazione, e la sua normalizzazione attorno allo zero (semplicemente veniva sottratta lungo 
+	l'asse verticale, l'accelerazione di gravità).
+	\item il sensore entra nel ciclo While-Loop, all'interno del quale, ogni centesimo di secondo, vengono 
+	raccolte le accelerazioni lungo i tre assi cartesiani e inserite in tre rispettivi array, dimensionati in 
+	modo da contenere 40 misurazioni.
+	\item Una volta riempiti i buffer, il sensore procede a calcolare la media delle accelerazioni lungo i 
+	tre assi, per poi sommare tali medie vettorialmente, tramite il teorema di Pitagora in tre dimensioni.
+	\item Invio del dato al server con influxdb.
+\end{itemize}
+
+Gli accelerometri e i microcontrollori utilizzati permettono una lettura dei dati ogni millesimo di secondo, ma 
+si è scelto, per non stressare troppo il modulo (causandone surriscaldamento, e relativo degradarsi della 
+precisione), di effettuarne una ogni centesimo di secondo. Dilatare ulteriormente la finestra temporale è stato 
+tuttavia scartato perché una distensione su panca piana, nelle sue fasi di concentrica e eccentrica (salita e 
+discesa del bilanciere), richiede tra gli uno e i due secondi, di conseguenza abbiamo ritenuto opportuno 
+avere circa 150 letture per ogni esecuzione.\\
+Si nota subito che l'implementazione più ovvia, ovvero quella che scrive su database ad ogni lettura (ogni 
+centesimo di secondo) è stata scartata per motivi tecnici, ritenedo il tempo di invio dato di gran lunga superiore 
+a quello di acquisizione dello stesso: inviare la lettura via internet e scriverla sul server remoto, richiede 
+sicuramente molto più di un centesimo di secondo, oltre ad essere un tempo variabile.\\
+
+Si è scelto dunque di aggregare le letture nel loro valore medio, a partire dagli array sopra descritti, 
+dimensionati tranmite una stima, in modo tale da rendere il tempo di elaborazione e invio a database non in grado 
+di sporcare eccesivamente il dato.
+
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{acc_2102}
+	\caption{21 febbraio 2022, prima implementazione}
+	\label{fig:accelerazione 2102}
+\end{figure}
+
+Con riferimento alla Figura 17, analizziamo questa lettura della prima implementazione.\\
+Sull'asse delle ascisse è rappresentato il tempo, mentre sulle ordinate abbiamo l'accelerazione in $ m/s^2 $.
+Il grafico può essere diviso in due parti da quel picco attorno alle 19 e 11, registrato da entrambi gli accelerometri,
+seguito dalla loro momentanea disconnessione, fino alle 19 e 15. Le curve successive, e vedremo che questo sarà un 
+problema ricorrente che tratteremo nelle conclusioni, presentano un andamento caotico e di difficile interpretazione.\\
+La prima parte del grafico tuttavia mostra chiaramente tre serie di allenamento (zone "disturbate" del grafico), 
+intervallate dai detti 90 secondi di pausa in cui entrambe le accelerazioni destra e sinistra rimangono costanti.
+Da un lato è positivo il fatto che gli accelerometri scrivano correttamente le proprie letture, ma i dati relativi alla 
+singola esecuzione, così come della serie intera, non offrono un andamento tale da trarre conclusioni o analisi.
+
+Passiamo dunque al grafico della seconda implementazione, nell'immagine che segue in Figura 18.
+
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{acc_0303}
+	\caption{3 marzo 2022, seconda implementazione}
+	\label{fig:accelerazione 0303}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{umidita_2102}
+	\caption{Umidità in percentuale}
+	\label{fig:Variazione umidità}
+\end{figure}
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{co2_2102}
+	\caption{eCO\textsubscript{2} in ppm e eTVOC in ppb}
+	\label{fig:Variazione CO2}
+\end{figure}
 
 \section{Analisi dei dati}
 
