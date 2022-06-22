@@ -29,6 +29,7 @@
 \usepackage[italian]{babel} % Specify a different language here - english by default
 
 \usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
+\usepackage{attachfile}
 
 %----------------------------------------------------------------------------------------
 %	COLUMNS
@@ -505,16 +506,16 @@ evidenziandone in seguito solo le modifiche sostanziali. Il codice completo e la
 è disponibile nella repository GitHub. 
 
 \begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-	\item All'accensione del sensore seguono dieci secondi di "buffer" in cui si permetteva all'utente di 
+	\item all'accensione del sensore seguono dieci secondi di "buffer" in cui si permetteva all'utente di 
 	posizionare e stabilizzare il modulo. Terminata questa fase di attesa, veniva effettuata la tara 
 	sull'accelerazione, e la sua normalizzazione attorno allo zero (semplicemente veniva sottratta lungo 
-	l'asse verticale, l'accelerazione di gravità).
+	l'asse verticale, l'accelerazione di gravità)
 	\item il sensore entra nel ciclo While-Loop, all'interno del quale, ogni centesimo di secondo, vengono 
 	raccolte le accelerazioni lungo i tre assi cartesiani e inserite in tre rispettivi array, dimensionati in 
-	modo da contenere 40 misurazioni.
-	\item Una volta riempiti i buffer, il sensore procede a calcolare la media delle accelerazioni lungo i 
-	tre assi, per poi sommare tali medie vettorialmente, tramite il teorema di Pitagora in tre dimensioni.
-	\item Invio del dato al server con influxdb.
+	modo da contenere 40 misurazioni
+	\item una volta riempiti i buffer, il sensore procede a calcolare la media delle accelerazioni lungo i 
+	tre assi, per poi sommare tali medie vettorialmente, tramite il teorema di Pitagora in tre dimensioni
+	\item invio del dato al server con influxdb
 \end{itemize}
 
 Gli accelerometri e i microcontrollori utilizzati permettono una lettura dei dati ogni millesimo di secondo, ma 
@@ -548,7 +549,7 @@ intervallate dai detti 90 secondi di pausa in cui entrambe le accelerazioni dest
 Da un lato è positivo il fatto che gli accelerometri scrivano correttamente le proprie letture, ma i dati relativi alla 
 singola esecuzione, così come della serie intera, non offrono un andamento tale da trarre conclusioni o analisi.
 
-Passiamo dunque al grafico della seconda implementazione, nell'immagine che segue in Figura 18.
+Passiamo dunque al grafico della seconda implementazione, che segue in Figura 18.
 
 \begin{figure}[htb]\centering
 	\includegraphics[width=\linewidth]{acc_0303}
@@ -556,30 +557,106 @@ Passiamo dunque al grafico della seconda implementazione, nell'immagine che segu
 	\label{fig:accelerazione 0303}
 \end{figure}
 
+In questa fase erano stati fatti due importanti aggiornamenti al codice: in prima istanza era stata rimossa la tara alle 
+misurazioni lungo gli assi cartesiani, in quanto ogni rotazione lungo l'asse orizzontale del bilanciere la rendeva del tutto 
+inutile. Veniva comunque mantenuta la sottrazione dell'accelerazione di gravità dal vettore risultante. Inoltre era stata 
+aumentata la granularità dei dati inviati, accorpando le misurazioni in array di 25 elementi, corrispondenti ad un invio 
+di dati nominale ogni quarto di secondo (ricordando che 25 elementi corrispondono a 250 millesimi di secondo).\\
+Il grafico, che questa volta riporta una sola serie dell'esercizio, mostra sicuramente un andamento più chiaro e coerente 
+rispetto a quanto ricercato, in particolare le ultime tre ripetizioni sono ben rappresentate da aumenti e diminuzioni di 
+accelerazione abbastanza allineati tra i due sensori.\\
+Si può inoltre notare che l'accelerazione media in fase di discesa non raggiunge mai 1 g, a testimonianza di una discesa 
+a velocità controllata del carico, contro una risalita abbastanza veloce, la cui accelerazione raggiunge i 10 $ m/s^2 $.\\
 
+Nonostante l'evidente miglioramento, il risultato non è stato ritenuto soddisfacente anche alla luce dell'analisi dei dati 
+tabellati (consultabili nel file allegato ACC\_ELAB\_2022-03-03.csv), che continuano a mostrare un evidente scostamento tra 
+i valori dei due accelerometri, anche in presenza di un movimento costante e controllato del bilanciere.
+Oltre a questo disturbo nelle misurazioni, risultava nuovamente evidente il progressivo degradarsi delle letture col passare 
+dei minuti.\\
 
+Con il successivo aggiornamento del codice è stata nuovamente modificata la dimensione dell'array, portandola a 30, diluendo 
+in minima parte la frequenza di invio, con l'obiettivo di diminuire la perdita di dati inviati, che a questo punto iniziavamo 
+a riconoscere come potenziale causa dello scostamento tra i dati registrati dai due accelerometri. Abbiamo inoltre raffinato 
+il calcolo della media, effettuandolo non più sulle singole componenti prima di ricavare il vettore risultante, ma calcolando 
+per ogni misurazione il vettore-somma, e successivamente la media tra tutti i vettori risultanti così ottenuti. Si è inoltre 
+ritenuta superflua la normalizzazione attorno allo zero dell'accelerazione, che è stata rimossa.
 
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{acc_2104}
+	\caption{21 aprile 2022, terza implementazione}
+	\label{fig:accelerazione 2104}
+\end{figure}
 
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{acc_2104_zoom}
+	\caption{zoom sulla prima serie}
+	\label{fig:zoom accelerazione 2104}
+\end{figure}
 
+In Figura 19 vediamo come gli aggiornamenti apportati abbiano reso i grafici molto più "armonici" rispetto alla prima versione 
+del codice, pur mantenendo l'evidente degradarsi delle letture con il tempo.
+Tuttavia lo zoom sulla singola serie (Figura 20) evidenzia come ancora una volta i dati ottenuti non siano coerenti con 
+l'esecuzione controllata dell'esercizio, dalla quale ci si aspetterebbero due curve circa sovrapponibili, o al più lievemente 
+discostate lungo l'asse del tempo.
 
+\subsubsection{L'ultima versione del codice degli accelerometri}
 
+Come nella precedente versione abbiamo di nuovo aumentato la dimensione dell'array a 35, con lo stesso obiettivo 
+sopra descritto. In questa implementazione sono state tuttavia introdotte due ulteriori modifiche sostanziali:
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	\item si è scelto di introdurre un'ulteriore metrica oltre alla media delle accelerazioni, ovvero il valore massimo di 
+	ogni array. Questo semplicemente alla ricerca di nuovi dati che potessero meglio offrirsi a interpretazione.\\
+	Possiamo anticipare che già dopo i primi test era stata riscontrata un'anomalia sulle letture dei sensori, che sporadicamente 
+	registravano dei valori di accelerazione massima non plausibili (in modulo fino a 80 $ m/s^2 $), anomalia che ci ha mostrato 
+	un probabile malfunzionamento dei sensori, aggirato con l'inserimento a livello di codice di valori soglia delle misurazioni, 
+	oltre i quali il dato viene scartato. Trattandosi comunque di un'eventualità non troppo frequente, ciò non presenta 
+	ripercussioni significative sulla sincronia delle letture dei due sensori.
+	\item abbiamo deciso di parallelizzare i task principali dei moduli, sfruttando l'architettura dual core delle ESP32. 
+	Invece di lavorare con il classico \textit{while-loop}, in fase di setup del microcontrollore vengono associati due task ai due 
+	core, eseguiti a loro volta su \textit{cicli-for} infiniti. \\
+	Uno dei due processori si occupa di raccogliere i dati, scrivendoli su un buffer 
+	condiviso, l'altro controlla, come da paradigma produttore-consumatore, se ci sono dati pronti per essere elaborati (calcolo 
+	della media e del massimo), e li invia. Il primo core, una volta riempito il primo array, passa a scrivere i dati su un 
+	secondo buffer.\\
+	L'idea di fondo è quella di permettere ad un core di effettuare continuamente le misurazioni, mentre all'altro di provvedere 
+	ai calcoli sui dati e al successivo invio. Così facendo, ipotizzando l'assenza di problemi di perdita dati in fase di 
+	comunicazione col server, si va ad annullare il tempo morto al termine del riempimento dell'array,
+	consentendo una scrittura omogenea e continua sul database.
+\end{itemize}
+
+Possiamo osservare nelle immagini che seguono i grafici risultanti (Figure 21 e 22), di nuovo relativi ad una sola serie. 
+
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{acc_0905_media}
+	\caption{zoom sulla prima serie}
+	\label{fig:zoom accelerazione 2104}
+\end{figure}
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{acc_0905_max}
+	\caption{zoom sulla prima serie}
+	\label{fig:zoom accelerazione 2104}
+\end{figure}
+
+Purtroppo ancora una volta, nonostante l'ulteriore accorgimento nell'utilizzo di un'interpolazione morbida nella generazione delle 
+curve (selezionabile nelle impostazioni dei grafici di influxdb), ci troviamo di fronte a dati di difficile interpretazione, se non 
+addirittura privi di significato.
+
+\section{Analisi finale e conclusione}
+
+\subsection{Risultati delle letture di temperatura e umidità}
 
 
 
 
 
 \begin{figure}[htb]\centering
-	\includegraphics[width=\linewidth]{umidita_2102}
-	\caption{Umidità in percentuale}
-	\label{fig:Variazione umidità}
-\end{figure}
-\begin{figure}[htb]\centering
-	\includegraphics[width=\linewidth]{co2_2102}
-	\caption{eCO\textsubscript{2} in ppm e eTVOC in ppb}
-	\label{fig:Variazione CO2}
+	\includegraphics[width=\linewidth]{acc_2104_zoom}
+	\caption{zoom sulla prima serie}
+	\label{fig:zoom accelerazione 2104}
 \end{figure}
 
-\section{Analisi dei dati}
+
 
 
 
