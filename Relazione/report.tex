@@ -16,9 +16,6 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% SNIPPET UTILI %
-
-
 %----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
@@ -27,9 +24,8 @@
 
 %\usepackage[english]{babel} % Specify a different language here - english by default
 \usepackage[italian]{babel} % Specify a different language here - english by default
-
-\usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
 \usepackage{attachfile}
+\usepackage{biblatex}
 
 %----------------------------------------------------------------------------------------
 %	COLUMNS
@@ -94,6 +90,8 @@
 
 %----------------------------------------------------------------------------------------
 
+\addbibresource{sample.bib}
+
 \begin{document}
 
 \maketitle % Output the title and abstract box
@@ -107,43 +105,6 @@
 %----------------------------------------------------------------------------------------
 
 \section*{Introduzione} % The \section*{} command stops section numbering
-%\lipsum[1-3] % Dummy text
-% and some mathematics $\cos\pi=-1$ and $\alpha$ in the text\footnote{And some mathematics $\cos\pi=-1$ and $\alpha$ in the text.}
-%Questa è una citazione al libro di testo~\cite{milenkovic2020internet}.
-
-% \begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-% 	\item First item in a list
-% 	\item Second item in a list
-% 	\item Third item in a list
-% \end{enumerate}
-
-% \begin{equation}
-% 	\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
-% 	\label{eq:refname2}
-% \end{equation}
-
-% \subsection{Subsection}
-
-% \paragraph{Paragraph} \lipsum[7] % Dummy text
-% \paragraph{Paragraph} \lipsum[8] % Dummy text
-
-% \subsection{Subsection}
-
-% \lipsum[9] % Dummy text
-
-% Reference to Figure \ref{fig:results}.
-
-% \begin{figure}[ht]\centering
-% 	\includegraphics[width=\linewidth]{results}
-% 	\caption{In-text Picture}
-% 	\label{fig:results}
-% \end{figure}
-
-% \begin{description}
-% 	\item[Word] Definition
-% 	\item[Concept] Explanation
-% 	\item[Idea] Text
-% \end{description}
 
 L'obiettivo preliminare di questo elaborato era verificare la fattibilità dell'allestimento di un sistema di 
 raccolta dati, in una piccola home gym, costruendo l'infrastruttura per far comunicare 
@@ -203,8 +164,8 @@ ampio campione di tester, nel caso fossimo riusciti a standardizzare il più pos
 
 \section{Gli strumenti utilizzati}
 
-In questa sezione porremo l'attenzione sugli strumenti di indagine utilizzati, sulla loro costruzione, 
-e sulle scelte di progetto e implementazione adottate.
+In questa sezione porremo l'attenzione sugli strumenti di indagine utilizzati, sulla loro costruzione, e sulle 
+scelte di progetto e implementazione adottate.
 
 \subsection{Allestimento dell'infrastruttura}
 
@@ -237,7 +198,7 @@ Per raccogliere i dati sono stati utilizzati i seguenti sensori:
 Si è scelto di collegare gli accelerometri a dei moduli di sviluppo ESP32 mini, potendo così accedere ad 
 un'architettura double core, mentre tutti gli altri sensori sono stati collegati a delle normali ESP8266. 
 Abbiamo adottato sensori DHT11 e DHT22 per temperatura e umidità, potendo così avere un confronto nella 
-precisione dei due: vediamo le differenze tra le loro specifiche nella tabella che segue.
+precisione dei due: vediamo le differenze tra le loro specifiche in Tabella 1.
 
 \begin{table}[hbt]
 	\caption{Specifiche DHT}
@@ -328,7 +289,7 @@ programmazione del modulo.
 Un discorso a parte va fatto per gli accelerometri, che per noi costituivano l'argomento di maggiore interesse 
 di questo studio.\\
 Innanzitutto è necessario chiarire l'obiettivo dell'analisi, ovvero cercare di registrare 
-se, nell'esecuzione di un qualsiasi esercizio che coinvolga il sollevamento di un bilanciere, si rilevano delle 
+se nell'esecuzione di un qualsiasi esercizio che coinvolge il sollevamento di un bilanciere, si rilevano delle 
 imperfezioni, da cogliere attraverso le differenze nelle accelerazioni agli estremi dell'attrezzo: se un accelerometro 
 posto a un estremo del bilanciere, avesse riscontrato accelerazioni diverse da quelle registrate 
 all'estremo opposto, sarebbe stato possibile individuare degli errori nell'esecuzione dell'esercizio, 
@@ -374,15 +335,15 @@ che causerebbe maggiore instabilità nell'esercizio.
 	\label{fig:bilanciere}
 \end{figure}
 
-Prima di passare alla raccolta e analisi dei dati ci è doveroso aggiungere che tutti i microcontrollori sono stati 
-programmati tramite Arduino. Eventuali particolarità o dettagli specifici di implementazione saranno affrontati in fase 
-di analisi dei dati. \\
-Tutto il codice è comunque consultabile nella repository GitHub indicata in bibliografia.
+Prima di passare alla raccolta e analisi dei dati aggiungiamo che i microcontrollori sono stati 
+programmati tramite Arduino con la sua integrazione per Visual Studio Code. Eventuali particolarità o dettagli specifici di 
+implementazione saranno affrontati successivamente. \\
+Tutto il codice è comunque consultabile nella repository GitHub \cite{GitHub} indicata in bibliografia.
 
-\section{Raccolta dati}
+\subsection{Tecnologie di comunicazione adottate}
 
-I dati sono stati raccolti su un server remoto sul quale è stato installato \textit{influxdb}, un database open source 
-per serie temporali, particolarmente adatto ad applicazioni IOT.\\
+I dati sono stati raccolti su un server remoto sul quale è stato installato \textit{influxdb} \cite{influxdb}, un database 
+open source per serie temporali, particolarmente adatto ad applicazioni IOT.\\
 
 Dei sette sensori di cui si è discusso, cinque comunicavano tramite il modulo WiFi del microcontrollore collegandosi 
 direttamente al server remoto.\\
@@ -396,10 +357,10 @@ direttamente al server remoto.\\
 Per i due moduli con DHT11 posizionati fuori dalla palestra, quello interno al locale, e quello esterno all'edificio 
 (per maggior chiarezza si faccia riferimento alla pianta del locale in Figura 11) si è optato per una soluzione 
 differente: essendo alimentati a batteria, abbiamo scelto di utilizzare due tecnologie particolarmente adatte al 
-risparmio energetico. Come protocollo di comunicazione si è scelto MQTT (Message Queuing Telemetry Transport), 
-particolarmente meno energivoro del classico WiFi, con il Raspberry Pi 4, come precedentemente detto, che funge 
-da broker, e i due sensori da client. \\
+risparmio energetico. Come protocollo di comunicazione si è scelto MQTT \cite{mqtt} (Message Queuing Telemetry Transport), 
+particolarmente meno energivoro del classico WiFi, con il Raspberry Pi 4 che funge da broker, e i due sensori da client. \\
 Per l'invio dei dati su influxdb è stato poi appositamente configurato su Raspberry un \textit{plugin telegraf}.\\
+
 La seconda tecnologia per il risparmio energetico è più che altro un accorgimento a livello implementativo: invece di 
 programmare i sensori con la classica modalità, ovvero in loop continuo, si è scelto di adottare il \textit{deep sleep}, 
 ovvero al termine di ogni lettura e invio dati, i moduli vengono letteralmente addormentati, lasciando attivo il Real 
@@ -417,9 +378,9 @@ Nell'immagine che segue (Figura 12) vediamo uno dei due sensori in oggetto.
 \section{I dati ambientali durante l'allenamento}
 
 Premettiamo che tutti i dati sono disponibili sia in forma aggregata che estensivamente nella repository GitHub indicata 
-in bibliografia, oltre ad essere consultabili direttamente sul server influxdb.\\
+in bibliografia \cite{GitHub2}, oltre ad essere consultabili direttamente sul server influxdb.\\
 
-Passiamo ora vedere i dati raccolti, relativi ad una data campione particolarmente indicativa, in cui è stata utilizzata 
+Passiamo ora vedere le misurazioni effettuate, relative ad una data campione particolarmente indicativa, in cui è stata utilizzata 
 la palestra. Alleghiamo i grafici estratti da influxdb nelle immagini che seguono (Figure 13, 14, 15), e 
 condensati nella tabella in Figura 16.\\
 
@@ -439,8 +400,8 @@ condensati nella tabella in Figura 16.\\
 	\label{fig:Variazione CO2}
 \end{figure}
 
-Le linee azzurre e viola sono relative ai due sensori interni, quella arancio 
-al sensore fuori dall'ingresso, quella magenta al sensore esterno.
+Le linee azzurre e viola sono relative ai due sensori interni, quella arancio al sensore fuori dall'ingresso, 
+quella magenta al sensore esterno.
 
 \begin{figure}[htb]\centering
 	\includegraphics[width=\linewidth]{tabella_dati}
@@ -468,12 +429,12 @@ significativamente, registrando solo un picco nella quantità di anidride carbon
 equivalenti), comunque inferiore a qualla generata dal metabolismo durante l'allenamento.\\
 Particolarmente interessante risulta l'andamento della temperatura registrata dal sensore posizionato 
 appena fuori dall'ingresso della stanza (linea arancio del grafico in Figura 13), che in questa fase 
-presenta a sua volta un aumento, mostrando chiaramente, come era intuibile, i problemi di isolamento
+presenta a sua volta un aumento, mostrando chiaramente i problemi di isolamento
 termico dovuti alla separazione degli ambienti ottenuta soltanto tramite due tende in tessuto sintetico.\\
 Il discostamento tra i valori della temperatura interna è invece spiegato dall'orientamento della stufa 
 elettrica, che evidentemente genera un flusso di aria calda più indirizzato verso uno dei sensori.\\
 
-Dallo spegnimento del generatore GPL in poi, si nota chiaramente una discesa della temperatura della 
+Dallo spegnimento del generatore GPL in poi, risulta evidente la discesa della temperatura della 
 palestra fino ad un punto di stabilità, ovvero una situazione in cui il calore generato dalla stufa 
 elettrica e dal metabolismo di chi si allena, è eguagliato dal calore disperso.\\
 I due sensori esterni alla palestra mostrano un andamento banale, ovvero di graduale stabilizzazione 
@@ -485,17 +446,18 @@ Torna invece ad essere di particolare interesse notare come le curve di CO\texts
 umidità abbiano un andamento correlato: i loro aumenti sono dovuti al metabolismo di chi si allena, 
 che emette costantemente anidride carbonica, vapore acqueo e composti organici di varia natura.\\
 
-Nella fase terminale dell'allenamento sono da registrarsi due fattori: da un lato lo spegnimento della 
+Nella fase terminale dell'allenamento registriamo altre due osservazioni: lo spegnimento della 
 stufa causa l'ovvio abbassamento della temperatura interna e la sua convergenza verso un unico valore; 
-dall'altro vediamo un difficilmente spiegabile aumento sia dell'umidità che di CO\textsubscript{2} e TVOC.
-Questi sono invece dovuti alla natura dell'allenamento svolto, che prevedeva una forte componente aerobica 
-sul finale, ben testimoniata dai grafici riportati.\\
+Si può inoltre notare un difficilmente spiegabile aumento sia dell'umidità che di CO\textsubscript{2} e TVOC.
+Questi riteniamo invece che siano dovuti a due fattori: da un lato la natura dell'allenamento svolto, 
+che prevedeva una forte componente aerobica sul finale, comportava un forte aumento del metabolismo di chi 
+si allenava, dall'altro è possibile che la stufa elettrica fungesse dal moderatore per l'umidità.\\
 
-\subsection{Analisi delle accelerazioni}
+\section{Studio delle accelerazioni}
 
-A differenza del paragrafo precedente, per quanto riguarda gli accelerometri i grafici verranno analizzati 
-singolarmente, in quanto ognuno, pur facendo riferimento alla stessa tipologia di esercizio, eseguito nel 
-modo più controllato possibile, è specchio di differenti implementazioni a livello di codice, ogni volta alla 
+A differenza del paragrafo precedente i grafici verranno analizzati singolarmente. 
+Ognuno di essi infatti, pur facendo riferimento alla stessa tipologia di esercizio, eseguito nel 
+modo più controllato possibile, è specchio di differenti implementazioni a livello di codice, volte alla 
 ricerca di maggior pulizia e indicatività nei dati raccolti.\\
 Ogni esercizio è stato svolto in blocchi di quattro serie da otto/dieci ripetizioni ognuna, con circa 90 
 secondi di pausa tra una serie e l'altra (col termine "ripetizione" si intende una discesa e risalita complete 
@@ -506,7 +468,7 @@ evidenziandone in seguito solo le modifiche sostanziali. Il codice completo e la
 è disponibile nella repository GitHub. 
 
 \begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-	\item all'accensione del sensore seguono dieci secondi di "buffer" in cui si permetteva all'utente di 
+	\item all'accensione del sensore seguivano dieci secondi di "buffer" in cui si permetteva all'utente di 
 	posizionare e stabilizzare il modulo. Terminata questa fase di attesa, veniva effettuata la tara 
 	sull'accelerazione, e la sua normalizzazione attorno allo zero (semplicemente veniva sottratta lungo 
 	l'asse verticale, l'accelerazione di gravità)
@@ -524,13 +486,14 @@ precisione), di effettuarne una ogni centesimo di secondo. Dilatare ulteriorment
 tuttavia scartato perché una distensione su panca piana, nelle sue fasi di concentrica e eccentrica (salita e 
 discesa del bilanciere), richiede tra gli uno e i due secondi, di conseguenza abbiamo ritenuto opportuno 
 avere circa 150 letture per ogni esecuzione.\\
-Si nota subito che l'implementazione più ovvia, ovvero quella che scrive su database ad ogni lettura (ogni 
+L'implementazione più ovvia, ovvero quella che scrive su database ad ogni lettura (ogni 
 centesimo di secondo) è stata scartata per motivi tecnici, ritenedo il tempo di invio dato di gran lunga superiore 
 a quello di acquisizione dello stesso: inviare la lettura via internet e scriverla sul server remoto, richiede 
-sicuramente molto più di un centesimo di secondo, oltre ad essere un tempo variabile.\\
+sicuramente molto più di un centesimo di secondo, oltre ad essere un tempo variabile, senza contare la quasi certa 
+perdita di pacchetti nel caso di invii così frequenti.\\
 
 Si è scelto dunque di aggregare le letture nel loro valore medio, a partire dagli array sopra descritti, 
-dimensionati tranmite una stima, in modo tale da rendere il tempo di elaborazione e invio a database non in grado 
+la cui dimensione è stata stimata in modo tale da rendere il tempo di elaborazione e invio a database, non in grado 
 di sporcare eccesivamente il dato.
 
 \begin{figure}[htb]\centering
@@ -539,7 +502,7 @@ di sporcare eccesivamente il dato.
 	\label{fig:accelerazione 2102}
 \end{figure}
 
-Con riferimento alla Figura 17, analizziamo questa lettura della prima implementazione.\\
+Con riferimento alla Figura 17, analizziamo le misurazioni ottenute dalla prima implementazione.\\
 Sull'asse delle ascisse è rappresentato il tempo, mentre sulle ordinate abbiamo l'accelerazione in $ m/s^2 $.
 Il grafico può essere diviso in due parti da quel picco attorno alle 19 e 11, registrato da entrambi gli accelerometri,
 seguito dalla loro momentanea disconnessione, fino alle 19 e 15. Le curve successive, e vedremo che questo sarà un 
@@ -569,12 +532,12 @@ Si può inoltre notare che l'accelerazione media in fase di discesa non raggiung
 a velocità controllata del carico, contro una risalita abbastanza veloce, la cui accelerazione raggiunge i 10 $ m/s^2 $.\\
 
 Nonostante l'evidente miglioramento, il risultato non è stato ritenuto soddisfacente anche alla luce dell'analisi dei dati 
-tabellati (consultabili nel file allegato ACC\_ELAB\_2022-03-03.csv), che continuano a mostrare un evidente scostamento tra 
+tabellati (consultabili nei file CSV allegati), che continuano a mostrare un evidente scostamento tra 
 i valori dei due accelerometri, anche in presenza di un movimento costante e controllato del bilanciere.
 Oltre a questo disturbo nelle misurazioni, risultava nuovamente evidente il progressivo degradarsi delle letture col passare 
 dei minuti.\\
 
-Con il successivo aggiornamento del codice è stata nuovamente modificata la dimensione dell'array, portandola a 30, diluendo 
+Con il successivo aggiornamento del codice è stata ancora modificata la dimensione dell'array, portandola a 30, diluendo 
 in minima parte la frequenza di invio, con l'obiettivo di diminuire la perdita di dati inviati, che a questo punto iniziavamo 
 a riconoscere come potenziale causa dello scostamento tra i dati registrati dai due accelerometri. Abbiamo inoltre raffinato 
 il calcolo della media, effettuandolo non più sulle singole componenti prima di ricavare il vettore risultante, ma calcolando 
@@ -642,35 +605,130 @@ Purtroppo ancora una volta, nonostante l'ulteriore accorgimento nell'utilizzo di
 curve (selezionabile nelle impostazioni dei grafici di influxdb), ci troviamo di fronte a dati di difficile interpretazione, se non 
 addirittura privi di significato.
 
-\section{Analisi finale e conclusione}
+\section{Risultati dello studio}
 
-\subsection{Risultati delle letture di temperatura e umidità}
+\subsection{Risultati delle letture dei dati ambientali}
+Con la sola lettura dei grafici è già possibile giungere a conclusioni abbastanza accurate rispetto alle performance termiche 
+dell'ambiente, grazie in particolare ad un fattore: nella fase centrale dell'allenamento, avendo come uniche fonti di calore 
+quello generato da chi si allena (stimato in letteratura a 200 Watt, per attività di medio-alta intesità) e dalla stufa 
+elettrica, possiamo posizionare la dispersione del calore nell'ordine dei 3000 Watt. \\
+Con un'analisi più approfondita e grazie ai dati raccolti dai sensori siamo stati tuttavia in grado di indagare meglio i 
+singoli fattori che contribuiscono a tale dispersione. Il procedimento dettagliato è fornito al solito nei documenti allegati, 
+qui ne mostriamo una sintesi e le conclusioni.\\
 
+In ultima analisi quello che dobbiamo cercare è condensato nella formula $ P = H \Delta T $, dove $ P $ è la potenza dispersa 
+media, $ H $ è il coefficiente di scambio termico per trasmissione, e $ \Delta T $ è la differenza di temperatura con l'ambiente 
+verso cui avviene la dispersione. L'ultimo termine ci è fornito dai sensori, mentre $ H $ si ottiene da $ H = U A $, 
+con $ U $ che è la trasmittanza termica per unità di superficie, valore dipendente dal materiale e noto in letteratura, 
+e $ A $ è l'area di dispersione.
 
+In Tabella 2 vediamo i valori ottenuti per l'involucro della palestra (per involucro si intende ciò che delimita il volume di un 
+ambiente, perciò pareti, pavimentazione, finestre, ecc...).
 
+\begin{table}[hbt]
+	\caption{Calcolo del coefficiente di scambio termico}
+	\centering
+	\begin{tabular}{lccc}
+		\toprule
+			 & \textbf{U} $ (W/m^2K) $ & \textbf{A} $ (m^2) $ & \textbf{H} $ (W/K) $ \\
+		\midrule
+		Finestre a un vetro & 6 & 5,73 & 34,38 \\
+		Pareti & 1,4 & 68,16 & 95,45 \\
+		Soffito e pavimento & 1,65 & 50 & 82,5 \\
+		Porta & 20 & 30,31 & 66,2 \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:label}
+\end{table}
 
+Sommando i valori ottenuti al coefficiente di scambio termico dovuto alla ventilazione (calcolato in 40,19 $ W/K $), otteniamo 
+$ H $ = 318,69 $ W/K $.
+Una prima conclusione che possiamo trarre è che l'isolamento della stanza dal resto dell'edificio, ottenuto con le due tende 
+fissate con il velcro, comporta sì una grande dispersione di calore, ma comunque molto minore rispetto a quanto ne viene 
+assorbito dagli elementi opachi dell'involucro (pareti, soffitto e pavimento). Questo assorbimento di calore è dovuto alla natura 
+di tali elementi opachi: pessimi conduttori e con grande inerzia termica.\\
+
+In Figura 23 possiamo infine vedere le istantanee in momenti significativi di diversi allenamenti, con associate le relative 
+temperature e la potenza dispersa in base alla formula che ripetiamo $ P = H \Delta T $. Sono stati evidenziati in verde gli orari 
+di accensione del generatore di calore e della stufa elettrica, in arancio e rosso rispettivamente i momenti di spegnimento del 
+generatore e della stufa.
 
 \begin{figure}[htb]\centering
-	\includegraphics[width=\linewidth]{acc_2104_zoom}
-	\caption{zoom sulla prima serie}
-	\label{fig:zoom accelerazione 2104}
+	\includegraphics[width=\linewidth]{potenza_dispersa_media}
+	\caption{Potenza dispersa in Watt}
+	\label{fig:potenza media dispersa}
 \end{figure}
 
+In Figura 24 riportiamo uno sguardo approndito sul singolo allenamento del 16 febbraio, giornata con una temperatura esterna 
+particolarmente rigida, con l'andamento della potenza dispersa nel tempo.
 
+\begin{figure}[htb]\centering
+	\includegraphics[width=\linewidth]{potenza_dispersa}
+	\caption{Potenza dispersa in Watt}
+	\label{fig:potenza media dispersa}
+\end{figure}
 
+La proporzionalità diretta tra la potenza dispersa e l'escursione termica tra la stanza e l'esterno, testimonia come sia 
+corretto spegnere il generatore GPL dopo pochi minuti dalla sua accensione, in quanto la percentuale di calore disperso diventa 
+sempre maggiore con l'aumento della temperatura interna.
 
+\subsection{Risultati delle letture degli accelerometri}
+Nel capitolo 4.2 si evince come purtroppo i dati ottenuti dai due moduli con gli accelerometri non consentano nessun tipo di 
+analisi in termini di esecuzione dell'esercizio.\\
+Il lungo processo di continue modifiche al codice e di vero e proprio \textit{trial and error}, ci hanno consentito tuttavia 
+di individuare abbastanza chiaramente i punti sui quali intervenire per porre rimedio ai problemi.
 
-\subsubsection{Subsubsection}
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	\item il problema delle rotazioni: per quanto i bilacieri olimpionici siano il più giroscopicamente stabili possibile, 
+	delle rotazioni possono comunque avvenire, andando a modificare il valore dell'accelerazione registrato. Essendo tuttavia 
+	un problema di natura meccanica, si può risolvere essenzialmente in due modi: o cambiando la progettazione delle scatole 
+	che contengono i moduli, facendo sì che l'accelerometro si trovi il più possibile vicino al centro di rotazione, o 
+	intervenendo a livello di codice, catturando con il modulo MPU-6050 non più solamente le accelerazioni lungo le tre 
+	dimensioni spaziali, ma anche le rotazioni, potendo così perfezionare il dato registrato con semplici correzioni matematiche.
+	\item il problema del degradarsi della qualità delle letture nel tempo: come risulta evidente in nelle Figure 17 e 19, tutte 
+	registrazioni delle accelerazioni presentano un progressivo degradarsi del dato, come se il sensore avesse una graduale perdita 
+	accuratezza. L'indagine in tal senso è più ostica: un fattore che ingenuamente potrebbe esserne causa è il surriscaldamento del 
+	sensore, visto che si trova compresso tra la plastica della scatola, il microcontrollore, la batteria, e un supporto di 
+	gommapiuma. Riteniamo poco plausibile che sia proprio questa la causa, ma è bene indagare se ci sia correlazione tra tale degrado 
+	e l'aumento di temperatura del sensore, e anche in questo caso ci viene in aiuto l'MPU-6050, che essendo dotato anche di un 
+	termometro interno, può fornirci anche tale informazione. Se così fosse si tratterebbe nuovamente di modificare la struttura 
+	delle scatole stampate in 3D.
+	\item osserviamo l'immagine che segue (Figura 25) \\
+	
+		\includegraphics[width=\linewidth]{acc_0905_TEST}
+		\captionof{figure}{Scostamento temporale}
 
-\section{Conclusioni}
+		Nell'immagine è raffigurato il grafico delle accelerazioni registrate ai capi del bilanciere a seguito di una sollecitazione. 
+		Quello che possiamo dedurne è di fatto il vero problema di tutto lo studio delle accelerazioni: 
+		tra i dati inviati dal modulo posizionato al capo destro e quello del capo sinistro, si registra uno scostamento temporale che 
+		non dovrebbe essere presente. L'analisi accurata delle esportazioni dal database influxdb, che nuovamente lasciamo in allegato, 
+		lo testimoniano chiaramente.\\
+		Ci sono varie tecniche per ovviare a tale inconveniente, che sottolineiamo nuovamente da solo invalida ogni tipo di acquisizione.
+		Ne segnaliamo in particolare una, ovvero l'assegnazione del \textit{timestamp} ai valori delle accelerazioni non più dal server 
+		remoto, ma direttamente dai microcontrollori. Le ESP32 tuttavia non hanno un orologio interno (oltre al RTC, che però è inutile 
+		ai fini della sincronizzazione), sarà dunque necessario implementare un meccanismo per ottenere, e soprattutto mantenere, la 
+		sincronia tra le letture dei due moduli.
+\end{itemize}
+
+\section{Sviluppi futuri}
+Per quanto riguarda lo studio dell'ambiente riteniamo che i dati ottenuti siano soddisfacenti e esaustivi; sarebbe comunque possibile 
+approfondire lo studio dei composti organici nell'aria in relazione al metabolismo del soggetto.\\
+Gli sviluppi degli accelerometri hanno invece grandi potenzialità, sia a livello commerciale, che di ricerca ai fini della biomeccanica 
+del movimento, branca delle scienze motorie sempre più coadiuvata dalle moderne tecnologie. Segnaliamo in particolare la possibilità
+di includere anche un modello di \textit{Machine learning per l'anomaly detection} nell'esecuzione dell'esercizio.\\
+Una volta ottenuto un prototipo funzionante nel caso specifico delle distensioni su panca piana, questo sarà ampliabile ad ogni 
+esercizio che coinvolga il sollevamento di un bilanciere o addirittura di manubri.
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
 
 \phantomsection
-\bibliographystyle{unsrt}
-\bibliography{sample.bib}
+% \bibliographystyle{unsrt}
+% \bibliography{report.bib}
+
+\vspace{2cm}
+\printbibliography
 
 %----------------------------------------------------------------------------------------
 
