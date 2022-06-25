@@ -1,11 +1,11 @@
 # Fdb version 3
-["biber report"] 1656172551 "report.bcf" "report.bbl" "report" 1656174189
-  "report.bcf" 1656174188 107367 435001339883a6a6dfb29127a985461d "pdflatex"
+["biber report"] 1656172551 "report.bcf" "report.bbl" "report" 1656174280
+  "report.bcf" 1656174280 107367 435001339883a6a6dfb29127a985461d "pdflatex"
   "sample.bib" 1656172550 445 8ea583f8b3a2e78a0d31c9575ec8bdc1 ""
   (generated)
   "report.bbl"
   "report.blg"
-["pdflatex"] 1656174186 "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" "report.pdf" "report" 1656174189
+["pdflatex"] 1656174277 "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" "report.pdf" "report" 1656174280
   "C:/Users/lucac/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1656169379 82507 a9eef8696c92627b87e9975edea03b2a ""
   "C:/Users/lucac/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1653584978 10252455 40ab635b14eebed57af7c696c43bbfec ""
   "C:/Users/lucac/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458477487 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
@@ -186,12 +186,12 @@
   "Figures//termoventilatore.jpeg" 1653920703 1009591 549f83ab17e2ab68ce88fe3d8be3dddd ""
   "Figures//umidita_2102.jpg" 1655665694 71819 ae63256ce62ed7cc0559c6dbb6651af7 ""
   "SelfArx.cls" 1644253514 8092 737c8d1591f9545f221c870f69e6d87b ""
-  "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" 1656174185 44593 b1f55b122fb29635627fa11fa595b88e ""
-  "report.aux" 1656174188 10325 08bffc46660780964aabda9bfe85d111 "pdflatex"
+  "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" 1656174276 44589 1320bbc737b39c181630e54b4aae77da ""
+  "report.aux" 1656174280 10325 08bffc46660780964aabda9bfe85d111 "pdflatex"
   "report.bbl" 1656172553 2186 24910593c0fe43c027c4a0e811213059 "biber report"
-  "report.out" 1656174188 3533 82461cda922175af20c034b0ce1a0f7e "pdflatex"
-  "report.run.xml" 1656174188 2315 dc40670f3cc3d47e8cfe45f2dfe1b748 "pdflatex"
-  "report.tex" 1656174185 44593 b1f55b122fb29635627fa11fa595b88e ""
+  "report.out" 1656174280 3533 82461cda922175af20c034b0ce1a0f7e "pdflatex"
+  "report.run.xml" 1656174280 2315 dc40670f3cc3d47e8cfe45f2dfe1b748 "pdflatex"
+  "report.tex" 1656174276 44589 1320bbc737b39c181630e54b4aae77da ""
   (generated)
   "report.aux"
   "report.bcf"
