@@ -26,7 +26,6 @@
 \usepackage[italian]{babel} % Specify a different language here - english by default
 \usepackage{attachfile}
 \usepackage{biblatex}
-
 %----------------------------------------------------------------------------------------
 %	COLUMNS
 %----------------------------------------------------------------------------------------
@@ -74,7 +73,7 @@
 \affiliation{\textsuperscript{2}\textit{Docente di Programmazione per l'Internet of Things, Università degli Studi di Urbino Carlo Bo, Urbino, Italia}} % Author affiliation
 \affiliation{*\textbf{Corresponding author}: l.cinti@campus.uniurb.it} % Corresponding author
 
-\Keywords{IOT --- Arduino --- ESP32 --- MQTT --- Gym Metrics} % Keywords - if you don't want any simply remove all the text between the curly brackets
+\Keywords{IOT --- Arduino --- ESP32 --- MQTT --- Training Metrics} % Keywords - if you don't want any simply remove all the text between the curly brackets
 \newcommand{\keywordname}{Keywords} % Defines the keywords heading name
 
 %----------------------------------------------------------------------------------------
@@ -342,7 +341,7 @@ Tutto il codice è comunque consultabile nella repository GitHub \cite{GitHub} i
 
 \subsection{Tecnologie di comunicazione adottate}
 
-I dati sono stati raccolti su un server remoto sul quale è stato installato \textit{influxdb} \cite{influxdb}, un database 
+I dati sono stati raccolti su un server remoto sul quale è stato installato \textit{influxdb}, un database 
 open source per serie temporali, particolarmente adatto ad applicazioni IOT.\\
 
 Dei sette sensori di cui si è discusso, cinque comunicavano tramite il modulo WiFi del microcontrollore collegandosi 
@@ -357,7 +356,7 @@ direttamente al server remoto.\\
 Per i due moduli con DHT11 posizionati fuori dalla palestra, quello interno al locale, e quello esterno all'edificio 
 (per maggior chiarezza si faccia riferimento alla pianta del locale in Figura 11) si è optato per una soluzione 
 differente: essendo alimentati a batteria, abbiamo scelto di utilizzare due tecnologie particolarmente adatte al 
-risparmio energetico. Come protocollo di comunicazione si è scelto MQTT \cite{mqtt} (Message Queuing Telemetry Transport), 
+risparmio energetico. Come protocollo di comunicazione si è scelto MQTT (Message Queuing Telemetry Transport), 
 particolarmente meno energivoro del classico WiFi, con il Raspberry Pi 4 che funge da broker, e i due sensori da client. \\
 Per l'invio dei dati su influxdb è stato poi appositamente configurato su Raspberry un \textit{plugin telegraf}.\\
 
@@ -562,10 +561,10 @@ Tuttavia lo zoom sulla singola serie (Figura 20) evidenzia come ancora una volta
 l'esecuzione controllata dell'esercizio, dalla quale ci si aspetterebbero due curve circa sovrapponibili, o al più lievemente 
 discostate lungo l'asse del tempo.
 
-\subsubsection{L'ultima versione del codice degli accelerometri}
+\subsection{L'ultima versione del codice degli accelerometri}
 
 Come nella precedente versione abbiamo di nuovo aumentato la dimensione dell'array a 35, con lo stesso obiettivo 
-sopra descritto. In questa implementazione sono state tuttavia introdotte due ulteriori modifiche sostanziali:
+sopra descritto. In questa implementazione sono state tuttavia apportate altre due modifiche sostanziali:
 
 \begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
 	\item si è scelto di introdurre un'ulteriore metrica oltre alla media delle accelerazioni, ovvero il valore massimo di 
@@ -592,12 +591,12 @@ Possiamo osservare nelle immagini che seguono i grafici risultanti (Figure 21 e 
 
 \begin{figure}[htb]\centering
 	\includegraphics[width=\linewidth]{acc_0905_media}
-	\caption{zoom sulla prima serie}
+	\caption{accelerazione media}
 	\label{fig:zoom accelerazione 2104}
 \end{figure}
 \begin{figure}[htb]\centering
 	\includegraphics[width=\linewidth]{acc_0905_max}
-	\caption{zoom sulla prima serie}
+	\caption{accelerazione massima}
 	\label{fig:zoom accelerazione 2104}
 \end{figure}
 
@@ -612,15 +611,15 @@ Con la sola lettura dei grafici è già possibile giungere a conclusioni abbasta
 dell'ambiente, grazie in particolare ad un fattore: nella fase centrale dell'allenamento, avendo come uniche fonti di calore 
 quello generato da chi si allena (stimato in letteratura a 200 Watt, per attività di medio-alta intesità) e dalla stufa 
 elettrica, possiamo posizionare la dispersione del calore nell'ordine dei 3000 Watt. \\
-Con un'analisi più approfondita e grazie ai dati raccolti dai sensori siamo stati tuttavia in grado di indagare meglio i 
-singoli fattori che contribuiscono a tale dispersione. Il procedimento dettagliato è fornito al solito nei documenti allegati, 
-qui ne mostriamo una sintesi e le conclusioni.\\
+Con un'analisi più approfondita, e grazie ai dati raccolti dai sensori, siamo stati tuttavia in grado di indagare meglio i 
+singoli fattori che contribuiscono a tale dispersione. Il procedimento dettagliato è fornito al solito nei documenti allegati \cite{ing_termo}, 
+qui ne mostriamo una sintesi e le conclusioni a cui siamo giunti.\\
 
 In ultima analisi quello che dobbiamo cercare è condensato nella formula $ P = H \Delta T $, dove $ P $ è la potenza dispersa 
 media, $ H $ è il coefficiente di scambio termico per trasmissione, e $ \Delta T $ è la differenza di temperatura con l'ambiente 
 verso cui avviene la dispersione. L'ultimo termine ci è fornito dai sensori, mentre $ H $ si ottiene da $ H = U A $, 
-con $ U $ che è la trasmittanza termica per unità di superficie, valore dipendente dal materiale e noto in letteratura, 
-e $ A $ è l'area di dispersione.
+con $ U $ che è la trasmittanza termica per unità di superficie, valore dipendente dal materiale e noto in letteratura 
+\cite{trasmittanza}, e $ A $ è l'area di dispersione.
 
 In Tabella 2 vediamo i valori ottenuti per l'involucro della palestra (per involucro si intende ciò che delimita il volume di un 
 ambiente, perciò pareti, pavimentazione, finestre, ecc...).
@@ -641,8 +640,8 @@ ambiente, perciò pareti, pavimentazione, finestre, ecc...).
 	\label{tab:label}
 \end{table}
 
-Sommando i valori ottenuti al coefficiente di scambio termico dovuto alla ventilazione (calcolato in 40,19 $ W/K $), otteniamo 
-$ H $ = 318,69 $ W/K $.
+Sommando i coefficienti così calcolati al coefficiente di scambio termico dovuto alla ventilazione (calcolato in 40,19 $ W/K $), 
+otteniamo per $ H $ un valore di 318,69 $ W/K $.
 Una prima conclusione che possiamo trarre è che l'isolamento della stanza dal resto dell'edificio, ottenuto con le due tende 
 fissate con il velcro, comporta sì una grande dispersione di calore, ma comunque molto minore rispetto a quanto ne viene 
 assorbito dagli elementi opachi dell'involucro (pareti, soffitto e pavimento). Questo assorbimento di calore è dovuto alla natura 
@@ -664,8 +663,8 @@ particolarmente rigida, con l'andamento della potenza dispersa nel tempo.
 
 \begin{figure}[htb]\centering
 	\includegraphics[width=\linewidth]{potenza_dispersa}
-	\caption{Potenza dispersa in Watt}
-	\label{fig:potenza media dispersa}
+	\caption{Potenza dispersa durante un allenamento}
+	\label{fig:potenza dispersa allenamento}
 \end{figure}
 
 La proporzionalità diretta tra la potenza dispersa e l'escursione termica tra la stanza e l'esterno, testimonia come sia 
@@ -673,61 +672,63 @@ corretto spegnere il generatore GPL dopo pochi minuti dalla sua accensione, in q
 sempre maggiore con l'aumento della temperatura interna.
 
 \subsection{Risultati delle letture degli accelerometri}
-Nel capitolo 4.2 si evince come purtroppo i dati ottenuti dai due moduli con gli accelerometri non consentano nessun tipo di 
+Nel paragrafo 4 si evince come purtroppo i dati ottenuti dai due moduli con gli accelerometri non consentano nessun tipo di 
 analisi in termini di esecuzione dell'esercizio.\\
-Il lungo processo di continue modifiche al codice e di vero e proprio \textit{trial and error}, ci hanno consentito tuttavia 
-di individuare abbastanza chiaramente i punti sui quali intervenire per porre rimedio ai problemi.
+Il lungo processo di continue modifiche al codice e di vero e proprio \textit{trial and error}, ci ha consentito tuttavia 
+di individuare con chiarezza i punti sui quali intervenire.\\
 
-\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-	\item il problema delle rotazioni: per quanto i bilacieri olimpionici siano il più giroscopicamente stabili possibile, 
-	delle rotazioni possono comunque avvenire, andando a modificare il valore dell'accelerazione registrato. Essendo tuttavia 
-	un problema di natura meccanica, si può risolvere essenzialmente in due modi: o cambiando la progettazione delle scatole 
-	che contengono i moduli, facendo sì che l'accelerometro si trovi il più possibile vicino al centro di rotazione, o 
-	intervenendo a livello di codice, catturando con il modulo MPU-6050 non più solamente le accelerazioni lungo le tre 
-	dimensioni spaziali, ma anche le rotazioni, potendo così perfezionare il dato registrato con semplici correzioni matematiche.
-	\item il problema del degradarsi della qualità delle letture nel tempo: come risulta evidente in nelle Figure 17 e 19, tutte 
-	registrazioni delle accelerazioni presentano un progressivo degradarsi del dato, come se il sensore avesse una graduale perdita 
-	accuratezza. L'indagine in tal senso è più ostica: un fattore che ingenuamente potrebbe esserne causa è il surriscaldamento del 
-	sensore, visto che si trova compresso tra la plastica della scatola, il microcontrollore, la batteria, e un supporto di 
-	gommapiuma. Riteniamo poco plausibile che sia proprio questa la causa, ma è bene indagare se ci sia correlazione tra tale degrado 
-	e l'aumento di temperatura del sensore, e anche in questo caso ci viene in aiuto l'MPU-6050, che essendo dotato anche di un 
-	termometro interno, può fornirci anche tale informazione. Se così fosse si tratterebbe nuovamente di modificare la struttura 
-	delle scatole stampate in 3D.
-	\item osserviamo l'immagine che segue (Figura 25) \\
-	
-		\includegraphics[width=\linewidth]{acc_0905_TEST}
-		\captionof{figure}{Scostamento temporale}
+Il primo problema da risolvere è quello delle rotazioni del bilanciere: per quanto i bilancieri olimpionici siano costruiti per 
+essere il più giroscopicamente stabili possibile, delle rotazioni possono comunque avvenire, andando a modificare il valore 
+dell'accelerazione misurata.\\
+Essendo tuttavia un problema di natura prettamente geometrica, si può risolvere essenzialmente in due modi: o cambiando la 
+progettazione delle scatole, facendo sì che l'accelerometro si trovi il più possibile vicino al centro 
+di rotazione (se non addirittura lungo esso), o intervenendo a livello di codice, catturando con il modulo MPU-6050 non più 
+solamente le accelerazioni lungo le tre dimensioni spaziali, ma anche le rotazioni, potendo così perfezionare il dato registrato 
+con semplici correzioni matematiche.\\
 
-		Nell'immagine è raffigurato il grafico delle accelerazioni registrate ai capi del bilanciere a seguito di una sollecitazione. 
-		Quello che possiamo dedurne è di fatto il vero problema di tutto lo studio delle accelerazioni: 
-		tra i dati inviati dal modulo posizionato al capo destro e quello del capo sinistro, si registra uno scostamento temporale che 
-		non dovrebbe essere presente. L'analisi accurata delle esportazioni dal database influxdb, che nuovamente lasciamo in allegato, 
-		lo testimoniano chiaramente.\\
-		Ci sono varie tecniche per ovviare a tale inconveniente, che sottolineiamo nuovamente da solo invalida ogni tipo di acquisizione.
-		Ne segnaliamo in particolare una, ovvero l'assegnazione del \textit{timestamp} ai valori delle accelerazioni non più dal server 
-		remoto, ma direttamente dai microcontrollori. Le ESP32 tuttavia non hanno un orologio interno (oltre al RTC, che però è inutile 
-		ai fini della sincronizzazione), sarà dunque necessario implementare un meccanismo per ottenere, e soprattutto mantenere, la 
-		sincronia tra le letture dei due moduli.
-\end{itemize}
+In seconda istanza sarà da affrontarsi il problema del degradarsi della qualità delle letture nel tempo, mostrato analizzando le 
+Figure 17 e 19. L'indagine in tal senso è più ostica: un fattore che ingenuamente potrebbe esserne causa è il surriscaldamento del 
+sensore, visto che si trova compresso tra la plastica della scatola, il microcontrollore, la batteria, e un supporto di 
+gommapiuma. Riteniamo poco plausibile che sia questa la causa, ma è bene indagare se ci sia correlazione tra tale degrado 
+e l'aumento di temperatura del sensore, e anche in questo caso ci viene in aiuto l'MPU-6050, che essendo dotato anche di un 
+termometro interno, può fornirci anche tale informazione.\\
+
+Si faccia infine riferimento alla Figura 25, in cui è raffigurato il grafico delle accelerazioni registrate ai 
+capi del bilanciere a seguito di una sollecitazione casuale.	
+\begin{figure}[htb]
+	\includegraphics[width=\linewidth, height=3cm]{acc_0905_TEST}
+	\caption{Scostamento temporale}
+	\label{fig:scostamento temporale}
+\end{figure}
+
+Quello che possiamo dedurne è di fatto il problema principale di questa analisi: 
+tra i dati inviati dai due moduli si registra uno scostamento temporale, per di più casuale, che non dovrebbe essere presente. 
+L'analisi accurata delle esportazioni dal database influxdb, che nuovamente lasciamo in allegato, lo testimoniano chiaramente.\\
+Fortunatamente è possibile affrontare tale problematica con varie tecniche, delle quali segnaliamo l'assegnazione del 
+\textit{timestamp} ai valori delle accelerazioni non più dal server remoto, ma direttamente dai microcontrollori. 
+Le ESP32 tuttavia non hanno un orologio interno (oltre al RTC, che però è inutile ai fini della sincronizzazione), sarà dunque 
+necessario implementare un meccanismo per ottenere, e soprattutto mantenere, la sincronia tra le letture dei due moduli.
 
 \section{Sviluppi futuri}
-Per quanto riguarda lo studio dell'ambiente riteniamo che i dati ottenuti siano soddisfacenti e esaustivi; sarebbe comunque possibile 
+Riteniamo lo studio dei dati ambientali soddisfacente e esaustivo, per quanto sarebbe di indubbio interesse  
 approfondire lo studio dei composti organici nell'aria in relazione al metabolismo del soggetto.\\
-Gli sviluppi degli accelerometri hanno invece grandi potenzialità, sia a livello commerciale, che di ricerca ai fini della biomeccanica 
-del movimento, branca delle scienze motorie sempre più coadiuvata dalle moderne tecnologie. Segnaliamo in particolare la possibilità
-di includere anche un modello di \textit{Machine learning per l'anomaly detection} nell'esecuzione dell'esercizio.\\
-Una volta ottenuto un prototipo funzionante nel caso specifico delle distensioni su panca piana, questo sarà ampliabile ad ogni 
-esercizio che coinvolga il sollevamento di un bilanciere o addirittura di manubri.
+
+È tuttavia agli sviluppi degli accelerometri che intendiamo dedicare le ricerche future, in quanto vediamo in questi delle 
+buone potenzialità, sia a livello commerciale, che di ricerca ai fini della biomeccanica del movimento, branca delle scienze motorie 
+sempre più coadiuvata dalle moderne tecnologie. Segnaliamo in particolare la possibilità
+di includere un modello di \textit{Machine learning per l'anomaly detection} nell'esecuzione dell'esercizio.\\
+Inoltre, una volta ottenuto un prototipo funzionante nel caso specifico delle distensioni su panca piana, questo sarà adattabile ad ogni 
+esercizio che coinvolga il sollevamento di un bilanciere.
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
 
-\phantomsection
+% \phantomsection
 % \bibliographystyle{unsrt}
 % \bibliography{report.bib}
 
-\vspace{2cm}
+\vspace{1,5cm}
 \printbibliography
 
 %----------------------------------------------------------------------------------------

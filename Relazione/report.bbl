@@ -31,28 +31,16 @@
       \verb https://github.com/SinergiaDeveloper1/IOT_Gym4.0/tree/master/Relazione/Allegati
       \endverb
     \endentry
-    \entry{influxdb}{online}{}
-      \field{sortinit}{I}
-      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+    \entry{ing_termo}{online}{}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
       \field{labeltitlesource}{title}
-      \field{title}{InfluxDB}
+      \field{title}{Fascicolo sulla Tipologia Edilizia Italiana}
       \verb{urlraw}
-      \verb https://www.influxdata.com/
+      \verb https://episcope.eu/fileadmin/tabula/public/docs/brochure_until2012/IT_TABULA_TypologyBrochure_POLITO_2011.pdf
       \endverb
       \verb{url}
-      \verb https://www.influxdata.com/
-      \endverb
-    \endentry
-    \entry{mqtt}{online}{}
-      \field{sortinit}{I}
-      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
-      \field{labeltitlesource}{title}
-      \field{title}{Informazioni su MQTT}
-      \verb{urlraw}
-      \verb https://mqtt.org/
-      \endverb
-      \verb{url}
-      \verb https://mqtt.org/
+      \verb https://episcope.eu/fileadmin/tabula/public/docs/brochure_until2012/IT_TABULA_TypologyBrochure_POLITO_2011.pdf
       \endverb
     \endentry
     \entry{GitHub}{online}{}
@@ -65,6 +53,18 @@
       \endverb
       \verb{url}
       \verb https://github.com/SinergiaDeveloper1/IOT_Gym4.0
+      \endverb
+    \endentry
+    \entry{trasmittanza}{online}{}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{labeltitlesource}{title}
+      \field{title}{Tabella trasmittanza termica}
+      \verb{urlraw}
+      \verb https://www.ingdemurtas.it/tabelle/tabella-trasmittanza-termica-di-materiali-isolanti/
+      \endverb
+      \verb{url}
+      \verb https://www.ingdemurtas.it/tabelle/tabella-trasmittanza-termica-di-materiali-isolanti/
       \endverb
     \endentry
   \enddatalist
