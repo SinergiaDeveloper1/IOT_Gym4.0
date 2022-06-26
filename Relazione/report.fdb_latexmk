@@ -1,11 +1,11 @@
 # Fdb version 3
-["biber report"] 1656201889 "report.bcf" "report.bbl" "report" 1656204942
-  "report.bcf" 1656204942 107385 310152b3fddd00423d6685521a736bbd "pdflatex"
-  "sample.bib" 1656201882 818 dd88cc88b4926a26977bd05b60cb16d3 ""
+["biber report"] 1656205333 "report.bcf" "report.bbl" "report" 1656205357
+  "report.bcf" 1656205357 107385 310152b3fddd00423d6685521a736bbd "pdflatex"
+  "sample.bib" 1656205332 767 1f2e7c7704e59f75157af54b00821d53 ""
   (generated)
   "report.bbl"
   "report.blg"
-["pdflatex"] 1656204939 "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" "report.pdf" "report" 1656204942
+["pdflatex"] 1656205354 "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" "report.pdf" "report" 1656205357
   "C:/Users/lucac/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1656201548 82507 a9eef8696c92627b87e9975edea03b2a ""
   "C:/Users/lucac/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1653584978 10252455 40ab635b14eebed57af7c696c43bbfec ""
   "C:/Users/lucac/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458477487 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
@@ -186,12 +186,12 @@
   "Figures//termoventilatore.jpeg" 1653920703 1009591 549f83ab17e2ab68ce88fe3d8be3dddd ""
   "Figures//umidita_2102.jpg" 1655665694 71819 ae63256ce62ed7cc0559c6dbb6651af7 ""
   "SelfArx.cls" 1644253514 8092 737c8d1591f9545f221c870f69e6d87b ""
-  "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" 1656204938 44313 49cc9d2fe5357746773f8df8375fab07 ""
-  "report.aux" 1656204942 10476 631ae66108435114f6e8fd9751853b31 "pdflatex"
-  "report.bbl" 1656201891 2542 e3d0c919859b43cf44f3ca2d5390d2b3 "biber report"
-  "report.out" 1656204942 3528 de1b6a4f8d5207db2706cef1c7f6d99f "pdflatex"
-  "report.run.xml" 1656204942 2315 dc40670f3cc3d47e8cfe45f2dfe1b748 "pdflatex"
-  "report.tex" 1656204938 44313 49cc9d2fe5357746773f8df8375fab07 ""
+  "c:/Users/lucac/source/repos/VSCode/IOT_Gym4.0/Relazione/report.tex" 1656205353 44311 c855c17aa4c4f99d351c7e4e60c4d57a ""
+  "report.aux" 1656205357 10476 e4e7ea22e1f2a1b3eaf60d0c3ba9e456 "pdflatex"
+  "report.bbl" 1656205335 2440 87c82bb414407f818473a47cc1f4edf8 "biber report"
+  "report.out" 1656205357 3528 de1b6a4f8d5207db2706cef1c7f6d99f "pdflatex"
+  "report.run.xml" 1656205357 2315 dc40670f3cc3d47e8cfe45f2dfe1b748 "pdflatex"
+  "report.tex" 1656205353 44311 c855c17aa4c4f99d351c7e4e60c4d57a ""
   (generated)
   "report.aux"
   "report.bcf"
